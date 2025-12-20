@@ -10,6 +10,7 @@
     "bootstrap": "^5.3.8",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0",
     "react-scripts": "5.0.1",
     "react-slick": "^0.31.0",
     "remixicon": "^4.7.0",

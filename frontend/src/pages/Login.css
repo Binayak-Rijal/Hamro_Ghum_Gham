@@ -223,4 +223,18 @@
     font-size: 1rem;
     margin-top: 0.5rem;
   }
+
+  /* Error styling for login form */
+.form-control.error {
+  border-color: #fc8181;
+  background-color: #fff5f5;
+}
+
+.error-text {
+  display: block;
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  font-weight: 500;
+}
 }
