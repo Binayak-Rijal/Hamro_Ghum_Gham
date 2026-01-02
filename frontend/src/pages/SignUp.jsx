@@ -1,5 +1,5 @@
 
-// import React, { useState } from "react";
+// import React, { useState, useRef } from "react";
 // import { Link } from "react-router-dom";
 // import "./SignUp.css";
 
@@ -17,6 +17,14 @@
 //   });
 //   const [errors, setErrors] = useState({});
 //   const [isLoading, setIsLoading] = useState(false);
+
+//   // Create refs for each input field
+//   const usernameRef = useRef(null);
+//   const emailRef = useRef(null);
+//   const passwordRef = useRef(null);
+//   const confirmPasswordRef = useRef(null);
+//   const checkboxRef = useRef(null);
+//   const submitButtonRef = useRef(null);
 
 //   const validateForm = () => {
 //     const newErrors = {};
@@ -56,6 +64,81 @@
 //     // Clear error when user starts typing
 //     if (errors[name]) {
 //       setErrors(prev => ({ ...prev, [name]: null }));
+//     }
+//   };
+
+//   // Handle Enter key press to move to next field
+//   const handleKeyDown = (e, currentField) => {
+//     if (e.key === 'Enter') {
+//       e.preventDefault(); // Prevent form submission
+      
+//       // Validate current field before moving
+//       const newErrors = { ...errors };
+//       let isValid = true;
+
+//       switch (currentField) {
+//         case 'username':
+//           if (!formData.username.trim()) {
+//             newErrors.username = "Username is required";
+//             isValid = false;
+//           } else {
+//             delete newErrors.username;
+//           }
+//           break;
+//         case 'email':
+//           if (!formData.email) {
+//             newErrors.email = "Email is required";
+//             isValid = false;
+//           } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+//             newErrors.email = "Email is invalid";
+//             isValid = false;
+//           } else {
+//             delete newErrors.email;
+//           }
+//           break;
+//         case 'password':
+//           if (!formData.password) {
+//             newErrors.password = "Password is required";
+//             isValid = false;
+//           } else if (formData.password.length < 8) {
+//             newErrors.password = "Password must be at least 8 characters";
+//             isValid = false;
+//           } else {
+//             delete newErrors.password;
+//           }
+//           break;
+//         case 'confirmPassword':
+//           if (!formData.confirmPassword) {
+//             newErrors.confirmPassword = "Please confirm your password";
+//             isValid = false;
+//           } else if (formData.password !== formData.confirmPassword) {
+//             newErrors.confirmPassword = "Passwords do not match";
+//             isValid = false;
+//           } else {
+//             delete newErrors.confirmPassword;
+//           }
+//           break;
+//       }
+
+//       setErrors(newErrors);
+
+//       // If current field is valid, move to next field
+//       if (isValid) {
+//         switch (currentField) {
+//           case 'username':
+//             emailRef.current?.focus();
+//             break;
+//           case 'email':
+//             passwordRef.current?.focus();
+//             break;
+//           case 'password':
+//             confirmPasswordRef.current?.focus();
+//             break;
+//           case 'confirmPassword':
+//             checkboxRef.current?.focus();
+//             break;
+//         }
+//       }
 //     }
 //   };
 
@@ -122,10 +205,12 @@
 //             <div className="signup-form-group">
 //               <label className="signup-label">Username</label>
 //               <input
+//                 ref={usernameRef}
 //                 type="text"
 //                 name="username"
 //                 value={formData.username}
 //                 onChange={handleChange}
+//                 onKeyDown={(e) => handleKeyDown(e, 'username')}
 //                 placeholder="Enter your username"
 //                 className={`signup-input ${errors.username ? 'error' : ''}`}
 //               />
@@ -138,10 +223,12 @@
 //             <div className="signup-form-group">
 //               <label className="signup-label">Email</label>
 //               <input
+//                 ref={emailRef}
 //                 type="email"
 //                 name="email"
 //                 value={formData.email}
 //                 onChange={handleChange}
+//                 onKeyDown={(e) => handleKeyDown(e, 'email')}
 //                 placeholder="you@example.com"
 //                 className={`signup-input ${errors.email ? 'error' : ''}`}
 //               />
@@ -154,10 +241,12 @@
 //             <div className="signup-form-group">
 //               <label className="signup-label">Password</label>
 //               <input
+//                 ref={passwordRef}
 //                 type={showPassword ? "text" : "password"}
 //                 name="password"
 //                 value={formData.password}
 //                 onChange={handleChange}
+//                 onKeyDown={(e) => handleKeyDown(e, 'password')}
 //                 placeholder="Create a strong password"
 //                 className={`signup-input ${errors.password ? 'error' : ''}`}
 //               />
@@ -170,10 +259,12 @@
 //             <div className="signup-form-group">
 //               <label className="signup-label">Confirm Password</label>
 //               <input
+//                 ref={confirmPasswordRef}
 //                 type={showPassword ? "text" : "password"}
 //                 name="confirmPassword"
 //                 value={formData.confirmPassword}
 //                 onChange={handleChange}
+//                 onKeyDown={(e) => handleKeyDown(e, 'confirmPassword')}
 //                 placeholder="Re-enter your password"
 //                 className={`signup-input ${errors.confirmPassword ? 'error' : ''}`}
 //               />
@@ -185,10 +276,17 @@
 //             {/* Show Password Checkbox */}
 //             <div className="show-password-container">
 //               <input
+//                 ref={checkboxRef}
 //                 type="checkbox"
 //                 id="showPassword"
 //                 checked={showPassword}
 //                 onChange={(e) => setShowPassword(e.target.checked)}
+//                 onKeyDown={(e) => {
+//                   if (e.key === 'Enter') {
+//                     e.preventDefault();
+//                     submitButtonRef.current?.focus();
+//                   }
+//                 }}
 //                 className="show-password-checkbox"
 //               />
 //               <label htmlFor="showPassword" className="show-password-label">
@@ -198,6 +296,7 @@
 
 //             {/* Submit Button */}
 //             <button
+//               ref={submitButtonRef}
 //               type="submit"
 //               disabled={isLoading}
 //               className="signup-submit-button"
@@ -230,14 +329,15 @@
 
 
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { signup } from "../api"; // Import the signup function
 import "./SignUp.css";
 
-// Path to images in public folder
 const backgroundUrl = `${process.env.PUBLIC_URL}/bg.jpg`;
 const logoUrl = `${process.env.PUBLIC_URL}/logo.png`;
 
 const Signup = () => {
+  const navigate = useNavigate(); // For redirecting after signup
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -247,8 +347,8 @@ const Signup = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Create refs for each input field
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -291,18 +391,15 @@ const Signup = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
   };
 
-  // Handle Enter key press to move to next field
   const handleKeyDown = (e, currentField) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
       
-      // Validate current field before moving
       const newErrors = { ...errors };
       let isValid = true;
 
@@ -352,7 +449,6 @@ const Signup = () => {
 
       setErrors(newErrors);
 
-      // If current field is valid, move to next field
       if (isValid) {
         switch (currentField) {
           case 'username':
@@ -380,19 +476,37 @@ const Signup = () => {
     }
     
     setIsLoading(true);
+    setErrors({});
+    setSuccessMessage("");
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Send data to backend
+      const response = await signup({
+        name: formData.username,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      // If successful
+      setSuccessMessage(response.message || "Signup successful!");
+      console.log("Signup successful:", response);
+      
+      // Redirect to login after 1.5 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+      
+    } catch (error) {
+      // If there's an error from backend
+      setErrors({ general: error });
+      console.error("Signup error:", error);
+    } finally {
       setIsLoading(false);
-      console.log("Signup successful:", formData);
-      alert("Signup successful! Check console for details.");
-      // You can add navigation here: navigate('/login');
-    }, 1500);
+    }
   };
 
   return (
     <div className="signup-container">
-      {/* Left Side - Hero Section */}
       <div 
         className="signup-left"
         style={{
@@ -408,10 +522,8 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Side - Form Section */}
       <div className="signup-right">
         <div className="signup-form-container">
-          {/* Logo */}
           <div className="signup-logo-container">
             <img
               src={logoUrl}
@@ -430,8 +542,35 @@ const Signup = () => {
           <h2 className="signup-form-title">Create Account</h2>
           <p className="signup-form-subtitle">Fill in your details to get started</p>
 
+          {/* Success Message */}
+          {successMessage && (
+            <div style={{
+              padding: '10px',
+              marginBottom: '15px',
+              backgroundColor: '#d4edda',
+              color: '#155724',
+              borderRadius: '5px',
+              textAlign: 'center'
+            }}>
+              ✓ {successMessage}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {errors.general && (
+            <div style={{
+              padding: '10px',
+              marginBottom: '15px',
+              backgroundColor: '#f8d7da',
+              color: '#721c24',
+              borderRadius: '5px',
+              textAlign: 'center'
+            }}>
+              ⚠ {errors.general}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="signup-form">
-            {/* Username */}
             <div className="signup-form-group">
               <label className="signup-label">Username</label>
               <input
@@ -449,7 +588,6 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Email */}
             <div className="signup-form-group">
               <label className="signup-label">Email</label>
               <input
@@ -467,7 +605,6 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Password */}
             <div className="signup-form-group">
               <label className="signup-label">Password</label>
               <input
@@ -485,7 +622,6 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div className="signup-form-group">
               <label className="signup-label">Confirm Password</label>
               <input
@@ -503,7 +639,6 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Show Password Checkbox */}
             <div className="show-password-container">
               <input
                 ref={checkboxRef}
@@ -524,7 +659,6 @@ const Signup = () => {
               </label>
             </div>
 
-            {/* Submit Button */}
             <button
               ref={submitButtonRef}
               type="submit"
@@ -541,7 +675,6 @@ const Signup = () => {
               )}
             </button>
 
-            {/* Login Link */}
             <div className="signup-login-container">
               <span className="signup-login-text">Already have an account? </span>
               <Link to="/login" className="signup-login-link">
