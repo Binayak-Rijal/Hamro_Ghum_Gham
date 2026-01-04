@@ -1,0 +1,513 @@
+/* WelcomePage.css - Enhanced Version */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 24px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background particles */
+.container::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: moveBackground 20s ease infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes moveBackground {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+}
+
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 40%, #ffa559 80%, #ffb366 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 50px 70px;
+  position: relative;
+  box-shadow: 15px 0 60px rgba(255, 107, 53, 0.5);
+  animation: slideInLeft 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 2;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  animation: fadeInBounce 1.2s ease-in;
+  z-index: 3;
+}
+
+@keyframes fadeInBounce {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+  }
+  70% { 
+    transform: scale(0.9);
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: white;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pulse 2s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 0 15px rgba(255, 255, 255, 0);
+  }
+}
+
+.logo-circle:hover {
+  transform: rotate(360deg) scale(1.15);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.logo-circle:hover .logo-image {
+  transform: scale(1.1);
+}
+
+/* Fallback styling if image doesn't load */
+.logo-circle.logo-fallback::after {
+  content: 'HGG';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  font-weight: 800;
+  color: #ff6b35;
+  letter-spacing: 2px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 600px;
+  animation: fadeInUp 1s ease-out 0.4s both;
+  z-index: 3;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  animation: slideInFromTop 0.8s ease-out 0.6s both;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subtitle {
+  font-size: 64px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 30px;
+  letter-spacing: 4px;
+  line-height: 1.15;
+  text-shadow: 4px 6px 15px rgba(0, 0, 0, 0.4);
+  animation: slideInFromLeft 0.8s ease-out 0.8s both;
+  background: linear-gradient(135deg, #ffffff 0%, #ffe8d6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.description {
+  font-size: 19px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 40px;
+  line-height: 1.8;
+  font-weight: 400;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1s ease-out 1s both;
+}
+
+.explore-btn {
+  background: white;
+  color: #ff6b35;
+  border: none;
+  padding: 20px 55px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  align-self: flex-start;
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.5), 0 0 0 0 rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  animation: fadeInScale 0.6s ease-out 1.2s both;
+  z-index: 1;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.explore-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  transform: translate(-50%, -50%);
+  transition: width 0.7s ease, height 0.7s ease;
+  z-index: -1;
+}
+
+.explore-btn:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.explore-btn:hover {
+  transform: translateY(-8px) scale(1.08);
+  box-shadow: 0 18px 50px rgba(255, 107, 53, 0.7), 0 0 30px rgba(255, 107, 53, 0.3);
+  color: white;
+}
+
+.explore-btn:active {
+  transform: translateY(-4px) scale(1.04);
+}
+
+/* Ripple effect on click */
+.explore-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s, opacity 0.6s;
+  opacity: 0;
+}
+
+.explore-btn:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: 0s;
+}
+
+.navigation {
+  display: flex;
+  gap: 14px;
+  animation: fadeIn 1.4s ease-in;
+  z-index: 3;
+}
+
+.nav-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.3);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+}
+
+.nav-dot.active {
+  background: white;
+  width: 45px;
+  border-radius: 7px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.5);
+}
+
+.right-panel {
+  flex: 1.2;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 1s ease-in 0.5s both;
+  z-index: 2;
+}
+
+.welcome-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  animation: zoomIn 1.5s ease-out 0.8s both;
+  display: block;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.welcome-image:hover {
+  transform: scale(1.05);
+}
+
+/* Decorative floating elements on left panel */
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  right: -25%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+}
+
+.left-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -35%;
+  right: -15%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .subtitle {
+    font-size: 52px;
+  }
+  
+  .left-panel {
+    padding: 40px 50px;
+  }
+}
+
+@media (max-width: 968px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    clip-path: none;
+    padding: 40px 30px;
+    flex: 0 0 auto;
+    min-height: 60vh;
+  }
+  
+  .subtitle {
+    font-size: 44px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .description {
+    font-size: 16px;
+  }
+  
+  .explore-btn {
+    padding: 16px 45px;
+    font-size: 14px;
+  }
+  
+  .right-panel {
+    flex: 1;
+    min-height: 40vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .left-panel {
+    padding: 30px 20px;
+  }
+  
+  .subtitle {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+  
+  .title {
+    font-size: 16px;
+    letter-spacing: 4px;
+  }
+  
+  .description {
+    font-size: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .explore-btn {
+    padding: 14px 35px;
+    font-size: 13px;
+    letter-spacing: 3px;
+  }
+  
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .subtitle {
+    font-size: 28px;
+  }
+  
+  .content {
+    max-width: 100%;
+  }
+}
