@@ -1,141 +1,144 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Menu, X, MapPin, Calendar, Users, Clock, Star } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { MapPin, Calendar, Users, Clock, Star, Bookmark } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import BookingConfirmation from '../components/BookingConfirmation';
+import Navbar from '../components/Navbar';
+import axios from 'axios';
 import './PackageDetail.css';
 
-// Package data
+// Package data (unchanged)
 const packagesData = {
-
-
   "everest-base-camp": {
-  id: 'everest-base-camp',
-  name: 'Everest Base Camp',
-  location: 'Solukhumbu, Nepal',
-  price: 1299,
-  duration: '14 Days',
-  image: '/images/everest.jpg',
-  rating: 4.9,
-  reviews: 342,
-  description:
-    'Trek to the base of the world’s highest mountain and experience breathtaking Himalayan views, Sherpa culture, and iconic landmarks like Namche Bazaar and Tengboche Monastery.',
-  highlights: [
-    'Everest Base Camp (5,364m)',
-    'Kala Patthar sunrise view',
-    'Sherpa culture and monasteries',
-    'Namche Bazaar exploration',
-    'Sagarmatha National Park',
-    'Scenic Lukla flight'
-  ],
-  itinerary: [
-    { day: 1, title: 'Fly to Lukla', description: 'Flight to Lukla and trek to Phakding' },
-    { day: 2, title: 'Phakding to Namche', description: 'Trek through suspension bridges' },
-    { day: 3, title: 'Acclimatization Day', description: 'Explore Namche Bazaar' },
-    { day: 4, title: 'Namche to Tengboche', description: 'Visit Tengboche Monastery' },
-    { day: 5, title: 'Tengboche to Dingboche', description: 'Mountain views all around' },
-    { day: 6, title: 'Acclimatization', description: 'Rest and short hikes' },
-    { day: 7, title: 'Lobuche', description: 'High altitude trekking' },
-    { day: 8, title: 'Everest Base Camp', description: 'Reach EBC and return to Gorakshep' },
-    { day: 9, title: 'Kala Patthar', description: 'Sunrise view & descent' },
-    { day: 10, title: 'Return Trek', description: 'Trek back to Namche' },
-    { day: 11, title: 'Namche to Lukla', description: 'Final trekking day' },
-    { day: 12, title: 'Fly to Kathmandu', description: 'End of trek' }
-  ],
-  included: [
-    'Domestic flights',
-    'Tea house accommodation',
-    'All meals during trek',
-    'Professional guide & porter',
-    'National park permit',
-    'TIMS card'
-  ],
-  excluded: [
-    'International flight',
-    'Travel insurance',
-    'Personal expenses',
-    'Tips'
-  ]
-},
+    id: 'everest-base-camp',
+    name: 'Everest Base Camp',
+    location: 'Solukhumbu, Nepal',
+    price: 1299,
+    duration: '14 Days',
+    image: '/images/everest.jpg',
+    rating: 4.9,
+    reviews: 342,
+    description:
+      'Trek to the base of the world\'s highest mountain and experience breathtaking Himalayan views, Sherpa culture, and iconic landmarks like Namche Bazaar and Tengboche Monastery.',
+    highlights: [
+      'Everest Base Camp (5,364m)',
+      'Kala Patthar sunrise view',
+      'Sherpa culture and monasteries',
+      'Namche Bazaar exploration',
+      'Sagarmatha National Park',
+      'Scenic Lukla flight'
+    ],
+    itinerary: [
+      { day: 1, title: 'Fly to Lukla', description: 'Flight to Lukla and trek to Phakding' },
+      { day: 2, title: 'Phakding to Namche', description: 'Trek through suspension bridges' },
+      { day: 3, title: 'Acclimatization Day', description: 'Explore Namche Bazaar' },
+      { day: 4, title: 'Namche to Tengboche', description: 'Visit Tengboche Monastery' },
+      { day: 5, title: 'Tengboche to Dingboche', description: 'Mountain views all around' },
+      { day: 6, title: 'Acclimatization', description: 'Rest and short hikes' },
+      { day: 7, title: 'Lobuche', description: 'High altitude trekking' },
+      { day: 8, title: 'Everest Base Camp', description: 'Reach EBC and return to Gorakshep' },
+      { day: 9, title: 'Kala Patthar', description: 'Sunrise view & descent' },
+      { day: 10, title: 'Return Trek', description: 'Trek back to Namche' },
+      { day: 11, title: 'Namche to Lukla', description: 'Final trekking day' },
+      { day: 12, title: 'Fly to Kathmandu', description: 'End of trek' }
+    ],
+    included: [
+      'Domestic flights',
+      'Tea house accommodation',
+      'All meals during trek',
+      'Professional guide & porter',
+      'National park permit',
+      'TIMS card'
+    ],
+    excluded: [
+      'International flight',
+      'Travel insurance',
+      'Personal expenses',
+      'Tips'
+    ]
+  },
 
   "annapurna-circuit": {
-  id: 'annapurna-circuit',
-  name: 'Annapurna Circuit',
-  location: 'Annapurna Region, Nepal',
-  price: 899,
-  duration: '12 Days',
-  image: '/images/annapurna.jpg',
-  rating: 4.8,
-  reviews: 278,
-  description:
-    'A classic Himalayan trek offering diverse landscapes, mountain views, and cultural villages including Thorong La Pass.',
-  highlights: [
-    'Thorong La Pass (5,416m)',
-    'Manang village',
-    'Hot springs at Tatopani',
-    'Mountain panoramas',
-    'Cultural villages'
-  ],
-  itinerary: [
-    { day: 1, title: 'Drive to Besisahar', description: 'Start of trek' },
-    { day: 2, title: 'Chame Trek', description: 'Enter Manang region' },
-    { day: 3, title: 'Manang', description: 'Acclimatization day' },
-    { day: 4, title: 'Yak Kharka', description: 'Gradual ascent' },
-    { day: 5, title: 'Thorong Phedi', description: 'Prepare for pass' },
-    { day: 6, title: 'Thorong La Pass', description: 'Cross highest pass' },
-    { day: 7, title: 'Muktinath', description: 'Holy temple visit' },
-    { day: 8, title: 'Jomsom', description: 'Descent and relax' },
-    { day: 9, title: 'Return to Pokhara', description: 'End of trek' }
-  ],
-  included: [
-    'Accommodation',
-    'Meals during trek',
-    'Guide and porter',
-    'All permits',
-    'Transport'
-  ],
-  excluded: [
-    'Flights',
-    'Personal gear',
-    'Insurance',
-    'Tips'
-  ]
-},
+    id: 'annapurna-circuit',
+    name: 'Annapurna Circuit',
+    location: 'Annapurna Region, Nepal',
+    price: 899,
+    duration: '12 Days',
+    image: '/images/annapurna.jpg',
+    rating: 4.8,
+    reviews: 278,
+    description:
+      'A classic Himalayan trek offering diverse landscapes, mountain views, and cultural villages including Thorong La Pass.',
+    highlights: [
+      'Thorong La Pass (5,416m)',
+      'Manang village',
+      'Hot springs at Tatopani',
+      'Mountain panoramas',
+      'Cultural villages'
+    ],
+    itinerary: [
+      { day: 1, title: 'Drive to Besisahar', description: 'Start of trek' },
+      { day: 2, title: 'Chame Trek', description: 'Enter Manang region' },
+      { day: 3, title: 'Manang', description: 'Acclimatization day' },
+      { day: 4, title: 'Yak Kharka', description: 'Gradual ascent' },
+      { day: 5, title: 'Thorong Phedi', description: 'Prepare for pass' },
+      { day: 6, title: 'Thorong La Pass', description: 'Cross highest pass' },
+      { day: 7, title: 'Muktinath', description: 'Holy temple visit' },
+      { day: 8, title: 'Jomsom', description: 'Descent and relax' },
+      { day: 9, title: 'Return to Pokhara', description: 'End of trek' }
+    ],
+    included: [
+      'Accommodation',
+      'Meals during trek',
+      'Guide and porter',
+      'All permits',
+      'Transport'
+    ],
+    excluded: [
+      'Flights',
+      'Personal gear',
+      'Insurance',
+      'Tips'
+    ]
+  },
 
   "chitwan-safari": {
-  id: 'chitwan-safari',
-  name: 'Chitwan Safari',
-  location: 'Chitwan National Park, Nepal',
-  price: 399,
-  duration: '3 Days',
-  image: '/images/chitwan.jpg',
-  rating: 4.7,
-  reviews: 189,
-  description:
-    'Enjoy wildlife adventures in Nepal’s most famous national park. Experience jungle safaris, elephant rides, and Tharu culture.',
-  highlights: [
-    'Jeep safari',
-    'Elephant breeding center',
-    'Canoeing',
-    'Bird watching',
-    'Tharu cultural dance'
-  ],
-  itinerary: [
-    { day: 1, title: 'Arrival', description: 'Check-in & cultural program' },
-    { day: 2, title: 'Safari Day', description: 'Jeep safari & canoe ride' },
-    { day: 3, title: 'Departure', description: 'Breakfast and return' }
-  ],
-  included: [
-    'Hotel stay',
-    'All meals',
-    'Safari activities',
-    'Guide',
-    'National park fees'
-  ],
-  excluded: [
-    'Transportation to Chitwan',
-    'Personal expenses',
-    'Tips'
-  ]
-},
+    id: 'chitwan-safari',
+    name: 'Chitwan Safari',
+    location: 'Chitwan National Park, Nepal',
+    price: 399,
+    duration: '3 Days',
+    image: '/images/chitwan.jpg',
+    rating: 4.7,
+    reviews: 189,
+    description:
+      'Enjoy wildlife adventures in Nepal\'s most famous national park. Experience jungle safaris, elephant rides, and Tharu culture.',
+    highlights: [
+      'Jeep safari',
+      'Elephant breeding center',
+      'Canoeing',
+      'Bird watching',
+      'Tharu cultural dance'
+    ],
+    itinerary: [
+      { day: 1, title: 'Arrival', description: 'Check-in & cultural program' },
+      { day: 2, title: 'Safari Day', description: 'Jeep safari & canoe ride' },
+      { day: 3, title: 'Departure', description: 'Breakfast and return' }
+    ],
+    included: [
+      'Hotel stay',
+      'All meals',
+      'Safari activities',
+      'Guide',
+      'National park fees'
+    ],
+    excluded: [
+      'Transportation to Chitwan',
+      'Personal expenses',
+      'Tips'
+    ]
+  },
 
   pokhara: {
     id: 'pokhara',
@@ -226,7 +229,7 @@ const packagesData = {
     location: 'Upper Mustang, Nepal',
     price: 799,
     duration: '10 Days',
-    image: '/images/mustang.jpg',
+    image: '/images/Mustang.jpg',
     rating: 5.0,
     reviews: 89,
     description: 'Explore the forbidden kingdom of Upper Mustang, a restricted area that offers a glimpse into ancient Tibetan culture. Discover dramatic desert landscapes, ancient caves, and centuries-old monasteries.',
@@ -268,12 +271,25 @@ const packagesData = {
       'Emergency evacuation'
     ]
   }
+};
 
+// ✅ Helper function for auth headers
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 export default function PackageDetail() {
   const { packageId } = useParams();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth(); 
+  
+  // ✅ UPDATED: Save state
+  const [isSaved, setIsSaved] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [bookingData, setBookingData] = useState({
     fullName: '',
     phone: '',
@@ -284,9 +300,112 @@ export default function PackageDetail() {
 
   const packageInfo = packagesData[packageId];
 
+  // ✅ UPDATED: Check if saved on mount
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (packageId && isAuthenticated()) {
+      checkIfSavedInDB();
+    } else {
+      setIsCheckingStatus(false);
+    }
+  }, [packageId]);
+
+  // ✅ NEW: Check saved status from database
+  const checkIfSavedInDB = async () => {
+    try {
+      setIsCheckingStatus(true);
+      const response = await axios.get(
+        `http://localhost:5000/api/saved/check/${packageId}/package`,
+        { headers: getAuthHeader() }
+      );
+      
+      if (response.data.success) {
+        setIsSaved(response.data.isSaved);
+      }
+    } catch (error) {
+      console.error('Error checking saved status:', error);
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
+  // ✅ UPDATED: Toggle save/unsave using database WITH TOASTIFY
+  const handleSaveToggle = async () => {
+    if (!isAuthenticated()) {
+      toast.error('Please login to save packages');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('No authentication token found. Please login again.');
+        navigate('/login');
+        return;
+      }
+
+      if (isSaved) {
+        // Remove from saved
+        const response = await axios.delete(
+          `http://localhost:5000/api/saved/${packageId}/package`,
+          { 
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.data.success) {
+          setIsSaved(false);
+          toast.success('Package removed from saved items');
+          
+          // Dispatch event to update navbar
+          window.dispatchEvent(new Event('savedItemsChanged'));
+        }
+      } else {
+        // Add to saved
+        const response = await axios.post(
+          'http://localhost:5000/api/saved',
+          {
+            itemId: packageInfo.id,
+            itemType: 'package',
+            name: packageInfo.name,
+            location: packageInfo.location,
+            price: packageInfo.price,
+            duration: packageInfo.duration,
+            image: packageInfo.image,
+            rating: packageInfo.rating
+          },
+          { 
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (response.data.success) {
+          setIsSaved(true);
+          toast.success('Package saved successfully!');
+          
+          // Dispatch event to update navbar
+          window.dispatchEvent(new Event('savedItemsChanged'));
+        }
+      }
+    } catch (error) {
+      console.error('Save toggle error:', error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Your session has expired. Please login again.');
+        navigate('/login');
+      } else if (error.response?.status === 400) {
+        toast.warning(error.response.data.message || 'Item already saved');
+      } else {
+        toast.error('Failed to update saved status. Please check your connection and try again.');
+      }
+    }
+  };
 
   if (!packageInfo) {
     return (
@@ -305,77 +424,117 @@ export default function PackageDetail() {
     const { name, value } = e.target;
     setBookingData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'guests' ? parseInt(value) || 1 : value
     }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
+  // ✅ FIXED: Improved validation function
   const validateForm = () => {
     const newErrors = {};
-    if (!bookingData.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (!bookingData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!bookingData.date) newErrors.date = 'Date is required';
-    if (bookingData.guests < 1) newErrors.guests = 'At least 1 guest required';
+    
+    // Full Name Validation
+    if (!bookingData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    } else if (bookingData.fullName.trim().length < 2) {
+      newErrors.fullName = 'Full name must be at least 2 characters';
+    }
+    
+    // Phone Validation - accept numbers like 980001101
+    const phoneRegex = /^[0-9]{9,15}$/;
+    const phoneDigits = bookingData.phone.replace(/\D/g, '');
+    if (!bookingData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!phoneRegex.test(phoneDigits)) {
+      newErrors.phone = 'Please enter a valid phone number (9-15 digits)';
+    }
+    
+    // Date Validation
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(bookingData.date);
+    
+    if (!bookingData.date) {
+      newErrors.date = 'Date is required';
+    } else if (selectedDate < today) {
+      newErrors.date = 'Please select a future date';
+    }
+    
+    // Guests Validation
+    if (bookingData.guests < 1 || isNaN(bookingData.guests)) {
+      newErrors.guests = 'At least 1 guest is required';
+    } else if (bookingData.guests > 20) {
+      newErrors.guests = 'Maximum 20 guests allowed';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleBookNow = (e) => {
+  // ✅ FIXED: Handle booking with correct field names WITH TOASTIFY
+  const handleBookNow = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      const booking = {
-        package: packageInfo.name,
-        ...bookingData,
-        subtotal,
-        serviceCharge,
-        total
-      };
-      console.log('Booking:', booking);
-      alert('Booking request submitted! We will contact you soon.');
-      // Here you would send this to your backend
+    
+    if (!isAuthenticated()) {
+      toast.error('Please login to book packages');
+      navigate('/login');
+      return;
+    }
+
+    // Validate form
+    if (!validateForm()) {
+      return; // Don't proceed if validation fails
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/bookings',
+        {
+          packageId: packageInfo.id,
+          packageName: packageInfo.name,
+          fullName: bookingData.fullName,
+          phone: bookingData.phone.replace(/\D/g, ''), // Clean phone number
+          travelDate: bookingData.date, // Changed from 'date' to 'travelDate'
+          numberOfPeople: bookingData.guests, // Changed from 'guests' to 'numberOfPeople'
+          subtotal,
+          serviceCharge,
+          totalPrice: total
+        },
+        { headers: getAuthHeader() }
+      );
+
+      if (response.data.success) {
+        // ✅ Show popup instead of toast
+        setConfirmedBooking({
+          packageName: packageInfo.name,
+          date: bookingData.date,
+          guests: bookingData.guests,
+          duration: packageInfo.duration,
+          phone: bookingData.phone,
+          total: total
+        });
+        setShowConfirmation(true);
+        
+        // Reset form
+        setBookingData({
+          fullName: '',
+          phone: '',
+          date: '',
+          guests: 1
+        });
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(error.response?.data?.message || 'Booking failed. Please try again.');
     }
   };
 
   return (
     <div className="package-detail-page">
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            <Link to="/home" className="logo">
-              <div className="logo-icon"></div>
-              <span className="logo-text">HamroGhum</span>
-            </Link>
-
-            <div className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link>
-              <Link to="#" className="nav-link">About</Link>
-              <Link to="#" className="nav-link active">Tour</Link>
-              <Link to="#" className="nav-link">Destinations</Link>
-              <Link to="/contact" className="nav-link">Contact</Link>
-            </div>
-
-            <div className="auth-buttons">
-              <Link to="/login">
-                <button className="btn-login">Login</button>
-              </Link>
-              <Link to="/signup">
-                <button className="btn-register">Register</button>
-              </Link>
-            </div>
-
-            <button 
-              className="mobile-menu-btn"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="icon" /> : <Menu className="icon" />}
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation */}
+      <Navbar />
 
       {/* Main Content */}
       <main className="package-detail-main">
@@ -391,6 +550,18 @@ export default function PackageDetail() {
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
+                {/* Save/Bookmark Button */}
+                <button 
+                  className={`save-button ${isSaved ? 'saved' : ''}`}
+                  onClick={handleSaveToggle}
+                  title={isSaved ? 'Remove from saved' : 'Save package'}
+                  disabled={isCheckingStatus}
+                >
+                  <Bookmark 
+                    className="bookmark-icon" 
+                    fill={isSaved ? 'currentColor' : 'none'}
+                  />
+                </button>
               </div>
 
               {/* Package Header */}
@@ -491,7 +662,7 @@ export default function PackageDetail() {
                     <input
                       type="tel"
                       name="phone"
-                      placeholder="Phone"
+                      placeholder="Phone (e.g., 980001101)"
                       value={bookingData.phone}
                       onChange={handleInputChange}
                       className={`booking-input ${errors.phone ? 'error' : ''}`}
@@ -507,6 +678,7 @@ export default function PackageDetail() {
                         value={bookingData.date}
                         onChange={handleInputChange}
                         className={`booking-input ${errors.date ? 'error' : ''}`}
+                        min={new Date().toISOString().split('T')[0]}
                       />
                       {errors.date && <span className="error-text">{errors.date}</span>}
                     </div>
@@ -516,10 +688,12 @@ export default function PackageDetail() {
                         name="guests"
                         placeholder="Guests"
                         min="1"
+                        max="20"
                         value={bookingData.guests}
                         onChange={handleInputChange}
                         className={`booking-input ${errors.guests ? 'error' : ''}`}
                       />
+                      {errors.guests && <span className="error-text">{errors.guests}</span>}
                     </div>
                   </div>
 
@@ -547,6 +721,15 @@ export default function PackageDetail() {
           </div>
         </div>
       </main>
+
+      {/* ✅ Booking Confirmation Popup */}
+      {showConfirmation && confirmedBooking && (
+        <BookingConfirmation
+          isOpen={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+          bookingDetails={confirmedBooking}
+        />
+      )}
     </div>
   );
 }

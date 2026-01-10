@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, MapPin, Calendar, Star, Filter, Search } from 'lucide-react';
+import { MapPin, Calendar, Star, Filter, Search } from 'lucide-react';
+import Navbar from '../components/Navbar';
 import './Tours.css';
 
 // All available packages
@@ -92,7 +93,6 @@ const allPackages = [
 ];
 
 export default function Tours() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,51 +116,8 @@ export default function Tours() {
 
   return (
     <div className="tours-page">
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            <Link to="/" className="logo">
-              <div className="logo-icon"></div>
-              <span className="logo-text">HamroGhum</span>
-            </Link>
-
-            <div className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link>
-              <Link to="/about" className="nav-link">About</Link>
-              <Link to="/tours" className="nav-link active">Tours</Link>
-              <Link to="/destinations" className="nav-link">Destinations</Link>
-              <Link to="/contact" className="nav-link">Contact</Link>
-            </div>
-
-            <div className="auth-buttons">
-              <Link to="/login">
-                <button className="btn-login">Login</button>
-              </Link>
-              <Link to="/signup">
-                <button className="btn-register">Register</button>
-              </Link>
-            </div>
-
-            <button 
-              className="mobile-menu-btn"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="icon" /> : <Menu className="icon" />}
-            </button>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="mobile-menu">
-            <Link to="/" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link>
-            <Link to="/about" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>About</Link>
-            <Link to="/tours" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Tours</Link>
-            <Link to="/destinations" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Destinations</Link>
-            <Link to="/contact" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-          </div>
-        )}
-      </nav>
+      {/* Shared Navigation */}
+      <Navbar />
 
       {/* Hero Section */}
       <section className="tours-hero">

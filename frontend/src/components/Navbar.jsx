@@ -1,65 +1,247 @@
-import React, { useState } from 'react';
-import { Mountain, Menu, X, User, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, X, User, LogOut, Bookmark, Calendar } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+import './Navbar.css';
+
+// Helper function for auth headers
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [savedCount, setSavedCount] = useState(0);
+  const [bookingsCount, setBookingsCount] = useState(0);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch saved count and bookings count from database
+  useEffect(() => {
+    if (isAuthenticated()) {
+      fetchSavedCount();
+      fetchBookingsCount();
+    }
+    
+    // Listen for save/unsave events
+    const handleSavedItemsChange = () => {
+      if (isAuthenticated()) {
+        fetchSavedCount();
+      }
+    };
+    
+    // Listen for booking changes
+    const handleBookingsChange = () => {
+      if (isAuthenticated()) {
+        fetchBookingsCount();
+      }
+    };
+    
+    window.addEventListener('savedItemsChanged', handleSavedItemsChange);
+    window.addEventListener('bookingsChanged', handleBookingsChange);
+    
+    return () => {
+      window.removeEventListener('savedItemsChanged', handleSavedItemsChange);
+      window.removeEventListener('bookingsChanged', handleBookingsChange);
+    };
+  }, [isAuthenticated()]);
+
+  // Fetch saved items count from database
+  const fetchSavedCount = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:5000/api/saved/count',
+        { headers: getAuthHeader() }
+      );
+      
+      if (response.data.success) {
+        setSavedCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('Error fetching saved count:', error);
+      setSavedCount(0);
+    }
+  };
+
+  // Fetch bookings count from database
+  const fetchBookingsCount = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:5000/api/bookings/count',
+        { headers: getAuthHeader() }
+      );
+      
+      if (response.data.success) {
+        setBookingsCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings count:', error);
+      setBookingsCount(0);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setSavedCount(0);
+    setBookingsCount(0);
+    setShowDropdown(false);
+    navigate('/home');
+  };
+
+  const handleProfileClick = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDropdown]);
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+    <header className={`site-navbar ${scrolled ? 'scrolled' : ''}`}>
+      <div className="site-container">
+        <div className="site-flex">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Mountain className="w-8 h-8 text-orange-500" />
-            <h1 className="text-2xl font-bold text-gray-800">
-              Hamro<span className="text-orange-500">Ghum</span>
+          <div className="site-logo" onClick={() => navigate('/home')}>
+            <img 
+              src="/images/logo.png" 
+              alt="HamroGhum Logo" 
+              className="site-logo__image"
+            />
+            <h1 className="site-logo__text">
+              Hamro<span className="site-logo__accent">GhumGham</span>
             </h1>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="/" className="text-gray-700 hover:text-orange-500 transition font-medium">
+          <nav className="site-nav">
+            <a href="/home" className="site-nav__link">
               Home
             </a>
-            <a href="/about" className="text-gray-700 hover:text-orange-500 transition font-medium">
+            <a href="/about" className="site-nav__link">
               About
             </a>
-            <a href="/tours" className="text-gray-700 hover:text-orange-500 transition font-medium">
+            <a href="/tours" className="site-nav__link">
               Tours
             </a>
-            <a href="/destinations" className="text-gray-700 hover:text-orange-500 transition font-medium">
+            <a href="/destinations" className="site-nav__link">
               Destinations
             </a>
-            <a href="/contact" className="text-gray-700 hover:text-orange-500 transition font-medium">
+            <a href="/contact" className="site-nav__link">
               Contact
             </a>
           </nav>
 
-          {/* Auth Buttons - Desktop */}
-          <div className="hidden md:flex items-center gap-4">
-            {isLoggedIn ? (
+          {/* Auth Section - Desktop */}
+          <div className="site-auth">
+            {isAuthenticated() ? (
               <>
-                <button className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition">
-                  <User className="w-5 h-5" />
-                  <span>Profile</span>
-                </button>
-                <button 
-                  onClick={() => setIsLoggedIn(false)}
-                  className="flex items-center gap-2 bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition"
+                {/* Saved Items Link */}
+                <a 
+                  href="/saved-packages" 
+                  className="site-saved"
                 >
-                  <LogOut className="w-5 h-5" />
-                  <span>Logout</span>
-                </button>
+                  <Bookmark className="site-saved__icon" />
+                  <span className="site-saved__text">Saved</span>
+                  {savedCount > 0 && (
+                    <span className="site-saved__badge">
+                      {savedCount}
+                    </span>
+                  )}
+                </a>
+
+                {/* Profile Dropdown */}
+                <div className="profile-dropdown-container">
+                  <button
+                    onClick={handleProfileClick}
+                    className="site-profile__button"
+                  >
+                    <div className="site-profile__avatar">
+                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div className="site-profile__meta">
+                      <p className="site-profile__name">{user?.name || 'User'}</p>
+                    </div>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showDropdown && (
+                    <div className="site-profile__dropdown">
+                      <div className="site-profile__dropdown-header">
+                        <p className="site-profile__dropdown-name">{user?.name}</p>
+                        <p className="site-profile__dropdown-email">{user?.email}</p>
+                      </div>
+                      
+                      <a
+                        href="/profile"
+                        className="site-profile__dropdown-link"
+                      >
+                        <User className="site-profile__dropdown-icon" />
+                        <span>My Profile</span>
+                      </a>
+                      
+                      <a
+                        href="/saved-packages"
+                        className="site-profile__dropdown-link"
+                      >
+                        <Bookmark className="site-profile__dropdown-icon" />
+                        <span>Saved Items ({savedCount})</span>
+                      </a>
+                      
+                      <a
+                        href="/bookings"
+                        className="site-profile__dropdown-link"
+                      >
+                        <Calendar className="site-profile__dropdown-icon" />
+                        <span>My Bookings ({bookingsCount})</span>
+                      </a>
+                      
+                      <div className="site-profile__divider"></div>
+                      
+                      <button
+                        onClick={handleLogout}
+                        className="site-profile__dropdown-link site-profile__dropdown-logout"
+                      >
+                        <LogOut className="site-profile__dropdown-icon" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
-                <a href="/login" className="text-gray-700 hover:text-orange-500 transition font-medium">
+                <a 
+                  href="/login" 
+                  className="site-auth__login"
+                >
                   Login
                 </a>
                 <a 
-                  href="/register" 
-                  className="bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition font-medium"
+                  href="/signup" 
+                  className="site-auth__register"
                 >
                   Register
                 </a>
@@ -70,61 +252,108 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-700 hover:text-orange-500 transition"
+            className="site-mobile-toggle"
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? <X className="site-mobile-toggle__icon" /> : <Menu className="site-mobile-toggle__icon" />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <nav className="md:hidden mt-4 pb-4 border-t pt-4">
-            <div className="flex flex-col gap-4">
-              <a href="/" className="text-gray-700 hover:text-orange-500 transition font-medium">
-                Home
-              </a>
-              <a href="/about" className="text-gray-700 hover:text-orange-500 transition font-medium">
-                About
-              </a>
-              <a href="/tours" className="text-gray-700 hover:text-orange-500 transition font-medium">
-                Tours
-              </a>
-              <a href="/destinations" className="text-gray-700 hover:text-orange-500 transition font-medium">
-                Destinations
-              </a>
-              <a href="/contact" className="text-gray-700 hover:text-orange-500 transition font-medium">
-                Contact
-              </a>
-              <div className="border-t pt-4 flex flex-col gap-3">
-                {isLoggedIn ? (
-                  <>
-                    <button className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition">
-                      <User className="w-5 h-5" />
-                      <span>Profile</span>
-                    </button>
-                    <button 
-                      onClick={() => setIsLoggedIn(false)}
-                      className="flex items-center gap-2 justify-center bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      <span>Logout</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <a href="/login" className="text-center text-gray-700 hover:text-orange-500 transition font-medium">
-                      Login
-                    </a>
-                    <a 
-                      href="/register" 
-                      className="text-center bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition font-medium"
-                    >
-                      Register
-                    </a>
-                  </>
-                )}
+          <nav className="site-mobile-nav">
+            <a href="/home" className="site-mobile-nav__link">
+              Home
+            </a>
+            <a href="/about" className="site-mobile-nav__link">
+              About
+            </a>
+            <a href="/tours" className="site-mobile-nav__link">
+              Tours
+            </a>
+            <a href="/destinations" className="site-mobile-nav__link">
+              Destinations
+            </a>
+            <a href="/contact" className="site-mobile-nav__link">
+              Contact
+            </a>
+            
+            <div className="site-mobile-nav__divider"></div>
+            
+            {isAuthenticated() ? (
+              <>
+                {/* User Info */}
+                <div className="site-mobile-user">
+                  <div className="site-mobile-user__avatar">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <div className="site-mobile-user__info">
+                    <p className="site-mobile-user__name">{user?.name || 'User'}</p>
+                    <p className="site-mobile-user__email">{user?.email || ''}</p>
+                  </div>
+                </div>
+
+                {/* Saved Items */}
+                <a 
+                  href="/saved-packages" 
+                  className="site-mobile-nav__link site-mobile-nav__link--special"
+                >
+                  <Bookmark className="site-mobile-nav__icon" />
+                  <span>Saved Items</span>
+                  {savedCount > 0 && (
+                    <span className="site-mobile-nav__badge">
+                      {savedCount}
+                    </span>
+                  )}
+                </a>
+
+                {/* Bookings */}
+                <a 
+                  href="/bookings" 
+                  className="site-mobile-nav__link site-mobile-nav__link--special"
+                >
+                  <Calendar className="site-mobile-nav__icon" />
+                  <span>My Bookings</span>
+                  {bookingsCount > 0 && (
+                    <span className="site-mobile-nav__badge">
+                      {bookingsCount}
+                    </span>
+                  )}
+                </a>
+
+                {/* Profile Link */}
+                <a 
+                  href="/profile" 
+                  className="site-mobile-nav__link site-mobile-nav__link--special"
+                >
+                  <User className="site-mobile-nav__icon" />
+                  <span>My Profile</span>
+                </a>
+
+                {/* Logout Button */}
+                <button 
+                  onClick={handleLogout}
+                  className="site-mobile-logout"
+                >
+                  <LogOut className="site-mobile-logout__icon" />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <div className="site-mobile-auth">
+                <a 
+                  href="/login" 
+                  className="site-mobile-auth__login"
+                >
+                  Login
+                </a>
+                <a 
+                  href="/signup" 
+                  className="site-mobile-auth__register"
+                >
+                  Register
+                </a>
               </div>
-            </div>
+            )}
           </nav>
         )}
       </div>

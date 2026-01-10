@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import Navbar from '../components/Navbar';
 import './ContactPage.css';
 
 export default function ContactPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     category: '',
     name: '',
@@ -52,41 +51,8 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page">
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            {/* Logo */}
-            <Link to="/" className="logo">
-              <div className="logo-icon"></div>
-              <span className="logo-text">HamroGhumGham</span>
-            </Link>
-
-            {/* Desktop Menu */}
-            <div className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link>
-              <Link to="#" className="nav-link">About</Link>
-              <Link to="/tours" className="nav-link">Tours</Link>
-              <Link to="#" className="nav-link">Destinations</Link>
-              <Link to="/contact" className="nav-link active">Contact</Link>
-            </div>
-
-            {/* Auth Buttons */}
-            <div className="auth-buttons">
-              <button className="btn-login">Login</button>
-              <button className="btn-register">Register</button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="mobile-menu-btn"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="icon" /> : <Menu className="icon" />}
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation */}
+      <Navbar />
 
       {/* Main Content */}
       <main className="contact-main">
