@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronRight, Star, MapPin, Calendar } from 'lucide-react';
+import { ChevronRight, Star, MapPin, Calendar, Users, Bookmark } from 'lucide-react';
 import './HomePage.css';
-
+import Navbar from '../components/Navbar';
 
 export default function HomePage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
 
   const handleHomeClick = (e) => {
@@ -20,67 +20,11 @@ export default function HomePage() {
 
   return (
     <div className="homepage">
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            {/* Logo - Already correct */}
-            <Link to="/home" className="logo">
-              <img src="/images/logo.png" alt="HamroGhumGham Logo" className="logo-img" />
-              <span className="logo-text">HamroGhumGham</span>
-            </Link>
+      {/* Shared Navigation */}
+      <Navbar />
 
 
-            {/* Desktop Menu - FIXED Home link */}
-            <div className="nav-menu">
-              <Link to="/home" className="nav-link">Home</Link> {/* FIXED */}
-              <Link to="/about" className="nav-link">About</Link>
-              <Link to="/tours" className="nav-link">Tours</Link>
-              <Link to="/destinations" className="nav-link">Destinations</Link>
-              <Link to="/contact" className="nav-link">Contact</Link>
-            </div>
-
-
-            {/* Auth Buttons */}
-            <div className="auth-buttons">
-              <Link to="/login">
-                <button className="btn-login">Login</button>
-              </Link>
-              <Link to="/signup">
-                <button className="btn-register">Register</button>
-              </Link>
-            </div>
-
-
-            {/* Mobile Menu Button */}
-            <button
-              className="mobile-menu-btn"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="icon" /> : <Menu className="icon" />}
-            </button>
-          </div>
-        </div>
-
-
-        {/* Mobile Menu Dropdown - FIXED Home link */}
-        {isMenuOpen && (
-          <div className="mobile-menu">
-            <Link to="/home" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link> {/* FIXED */}
-            <Link to="/about" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>About</Link>
-            <Link to="/tours" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Tours</Link>
-            <Link to="/destinations" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Destinations</Link>
-            <Link to="/contact" className="mobile-nav-link" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-            <div className="mobile-auth-buttons">
-              <Link to="/login" className="mobile-btn-login" onClick={() => setIsMenuOpen(false)}>Login</Link>
-              <Link to="/signup" className="mobile-btn-register" onClick={() => setIsMenuOpen(false)}>Register</Link>
-            </div>
-          </div>
-        )}
-      </nav>
-
-
-      {/* Rest of the component remained the same */}
+      {/* Rest of the component */}
       <main className="main-content">
         {/* Hero Section */}
         <div className="hero-container">
@@ -107,12 +51,6 @@ export default function HomePage() {
                 Find out more
                 <ChevronRight className="icon-small" />
               </Link>
-              <button className="btn-secondary">
-                <svg className="icon-small" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                Play Demo
-              </button>
             </div>
 
 
@@ -247,8 +185,119 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Popular Destinations Section */}
+<section className="packages-section">
+  <div className="packages-container">
+    <div className="section-header">
+      <h2 className="section-title">Popular Destinations</h2>
+      <p className="section-subtitle">Discover the most visited places in Nepal</p>
+    </div>
+
+    <div className="packages-grid">
+      {/* Kathmandu Card */}
+      <Link to="/destination/kathmandu" className="package-card-link">
+        <div className="package-card">
+          <div className="package-image-container">
+            <img src="/images/kathmandu.jpg" alt="Kathmandu" className="package-image" />
+            <div className="package-badge">Capital City</div>
+          </div>
+          <div className="package-content">
+            <h3 className="package-title">Kathmandu</h3>
+            <p className="package-description">
+              Explore ancient temples, vibrant markets, and UNESCO World Heritage Sites in Nepal's capital.
+            </p>
+            <div className="package-features">
+              <div className="package-feature">
+                <Star className="feature-icon" />
+                <span>4.8 Rating</span>
+              </div>
+              <div className="package-feature">
+                <Users className="feature-icon" />
+                <span>5,200+ Visitors</span>
+              </div>
+            </div>
+            <div className="package-footer">
+              <div className="package-price">
+                <span className="price-label">Starting at</span>
+                <span className="price-amount">NPR 25,000</span>
+              </div>
+              <button className="btn-book">Explore</button>
+            </div>
+          </div>
+        </div>
+      </Link>
+
+      {/* Chitwan Card */}
+      <Link to="/destination/chitwan" className="package-card-link">
+        <div className="package-card">
+          <div className="package-image-container">
+            <img src="/images/chitwan.jpg" alt="Chitwan" className="package-image" />
+            <div className="package-badge">Wildlife</div>
+          </div>
+          <div className="package-content">
+            <h3 className="package-title">Chitwan</h3>
+            <p className="package-description">
+              Experience jungle safaris, spot rare wildlife, and enjoy elephant rides in Chitwan National Park.
+            </p>
+            <div className="package-features">
+              <div className="package-feature">
+                <Star className="feature-icon" />
+                <span>4.9 Rating</span>
+              </div>
+              <div className="package-feature">
+                <Users className="feature-icon" />
+                <span>3,800+ Visitors</span>
+              </div>
+            </div>
+            <div className="package-footer">
+              <div className="package-price">
+                <span className="price-label">Starting at</span>
+                <span className="price-amount">NPR 35,000</span>
+              </div>
+              <button className="btn-book">Explore</button>
+            </div>
+          </div>
+        </div>
+      </Link>
+
+      {/* Lumbini Card */}
+      <Link to="/destination/lumbini" className="package-card-link">
+        <div className="package-card">
+          <div className="package-image-container">
+            <img src="/images/lumbini.jpg" alt="Lumbini" className="package-image" />
+            <div className="package-badge">Spiritual</div>
+          </div>
+          <div className="package-content">
+            <h3 className="package-title">Lumbini</h3>
+            <p className="package-description">
+              Visit the birthplace of Lord Buddha and explore sacred gardens, monasteries, and monuments.
+            </p>
+            <div className="package-features">
+              <div className="package-feature">
+                <Star className="feature-icon" />
+                <span>4.7 Rating</span>
+              </div>
+              <div className="package-feature">
+                <Users className="feature-icon" />
+                <span>4,100+ Visitors</span>
+              </div>
+            </div>
+            <div className="package-footer">
+              <div className="package-price">
+                <span className="price-label">Starting at</span>
+                <span className="price-amount">NPR 28,000</span>
+              </div>
+              <button className="btn-book">Explore</button>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>
+  </div>
+</section>
+
       </main>
     </div>
   );
 }
-

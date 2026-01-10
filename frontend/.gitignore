@@ -22,14 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-
-# Ignore auth & welcome pages
-frontend/src/pages/Login.jsx
-frontend/src/pages/Login.css
-
-frontend/src/pages/SignUp.jsx
-frontend/src/pages/SignUp.css
-
-frontend/src/pages/WelcomePage.jsx
-frontend/src/pages/WelcomePage.css

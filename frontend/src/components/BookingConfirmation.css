@@ -1,0 +1,322 @@
+/* ============================================
+   BookingConfirmation.css
+   Location: src/components/BookingConfirmation.css
+   ============================================ */
+
+/* Popup Overlay */
+.booking-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: bookingFadeIn 0.3s ease-in-out;
+}
+
+@keyframes bookingFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Popup Container */
+.booking-popup-container {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: bookingSlideUp 0.4s ease-out;
+}
+
+@keyframes bookingSlideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close Button */
+.booking-popup-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+  z-index: 1;
+}
+
+.booking-popup-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+  transform: rotate(90deg);
+}
+
+/* Content */
+.booking-popup-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+/* Success Icon */
+.booking-success-icon-wrapper {
+  margin-bottom: 24px;
+}
+
+.booking-success-checkmark {
+  display: inline-block;
+  color: #10b981;
+  animation: bookingScaleIn 0.5s ease-out;
+}
+
+@keyframes bookingScaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Title & Subtitle */
+.booking-popup-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.booking-popup-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* Booking Details Box */
+.booking-details-box {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.booking-details-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.booking-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.booking-detail-item:last-child {
+  border-bottom: none;
+}
+
+.booking-detail-item svg {
+  color: #f97316;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.booking-detail-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.booking-detail-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.booking-detail-value {
+  font-size: 15px;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: right;
+}
+
+.booking-total-price {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.booking-total-price .booking-detail-label {
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.booking-total-price .booking-detail-value.booking-price {
+  font-size: 24px;
+  color: #f97316;
+  font-weight: 700;
+}
+
+/* Contact Info Box */
+.booking-contact-info-box {
+  background: #fef3c7;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.booking-contact-title {
+  font-size: 13px;
+  color: #92400e;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.booking-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #78350f;
+  justify-content: center;
+}
+
+.booking-contact-item svg {
+  flex-shrink: 0;
+}
+
+/* Confirmation Number */
+.booking-confirmation-number {
+  background: #dbeafe;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 24px;
+}
+
+.booking-confirmation-number p {
+  font-size: 13px;
+  color: #1e40af;
+  margin: 0;
+}
+
+.booking-confirmation-number strong {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Action Button */
+.booking-popup-button {
+  width: 100%;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.booking-popup-button:hover {
+  background: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.booking-popup-button:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar Styling */
+.booking-popup-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-popup-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.booking-popup-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.booking-popup-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .booking-popup-content {
+    padding: 30px 20px;
+  }
+
+  .booking-popup-title {
+    font-size: 24px;
+  }
+
+  .booking-popup-subtitle {
+    font-size: 14px;
+  }
+
+  .booking-details-box {
+    padding: 20px;
+  }
+
+  .booking-detail-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .booking-detail-value {
+    text-align: left;
+  }
+}
