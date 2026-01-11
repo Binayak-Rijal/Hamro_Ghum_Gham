@@ -1,15 +1,76 @@
-# Node
+# # Node
+# node_modules/
+
+# # Logs
+# logs/
+# *.log
+# npm-debug.log*
+# yarn-debug.log*
+# pnpm-debug.log*
+# lerna-debug.log*
+
+# # Build outputs
+# dist/
+# build/
+# out/
+# .next/
+# .vite/
+# .cache/
+# public/build/
+
+# # Frontend / Backend specific
+# /frontend/node_modules/
+# /frontend/dist/
+# /backend/node_modules/
+# /backend/uploads/
+# /uploads/
+
+# # Environment / secret files
+# .env
+# .env.local
+# .env.*.local
+# .env.test
+# .env.production
+
+# # Coverage and reports
+# coverage/
+# coverage/**
+
+# # OS generated files
+# .DS_Store
+# Thumbs.db
+# desktop.ini
+
+# # IDE/editor folders
+# .vscode/
+# .idea/
+# *.suo
+# *.ntvs*
+# *.njsproj
+# *.sln
+# *.sw?
+
+# # Package manager
+# .pnpm-debug.log
+
+# # Misc
+# *.tgz
+# *.zip
+# *.tar.gz
+# *.seed
+# *.pid
+
+# # TypeScript
+# *.tsbuildinfo
+
+# # Keep lockfiles under version control (do not ignore package-lock.json or pnpm-lock.yaml)
+
+
+# Node dependencies
 node_modules/
+**/node_modules/
 
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Build outputs
+# Build / output
 dist/
 build/
 out/
@@ -25,30 +86,30 @@ public/build/
 /backend/uploads/
 /uploads/
 
-# Environment / secret files
+# Environment / secrets
 .env
 .env.local
 .env.*.local
 .env.test
 .env.production
 
-# Coverage and reports
-coverage/
-coverage/**
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# OS generated files
+# Coverage
+coverage/
+
+# OS / editor
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE/editor folders
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
 # Package manager
 .pnpm-debug.log
@@ -57,10 +118,9 @@ desktop.ini
 *.tgz
 *.zip
 *.tar.gz
-*.seed
-*.pid
 
 # TypeScript
 *.tsbuildinfo
 
-# Keep lockfiles under version control (do not ignore package-lock.json or pnpm-lock.yaml)
+# Keep lockfiles under version control
+# (do not ignore package-lock.json, yarn.lock, pnpm-lock.yaml)
