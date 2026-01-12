@@ -273,7 +273,7 @@ const packagesData = {
   }
 };
 
-// ✅ Helper function for auth headers
+// Helper function for auth headers
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -284,7 +284,7 @@ export default function PackageDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth(); 
   
-  // ✅ UPDATED: Save state
+  // UPDATED: Save state
   const [isSaved, setIsSaved] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   
@@ -300,7 +300,7 @@ export default function PackageDetail() {
 
   const packageInfo = packagesData[packageId];
 
-  // ✅ UPDATED: Check if saved on mount
+  // UPDATED: Check if saved on mount
   useEffect(() => {
     window.scrollTo(0, 0);
     if (packageId && isAuthenticated()) {
@@ -310,7 +310,7 @@ export default function PackageDetail() {
     }
   }, [packageId]);
 
-  // ✅ NEW: Check saved status from database
+  //  NEW: Check saved status from database
   const checkIfSavedInDB = async () => {
     try {
       setIsCheckingStatus(true);
@@ -329,7 +329,7 @@ export default function PackageDetail() {
     }
   };
 
-  // ✅ UPDATED: Toggle save/unsave using database WITH TOASTIFY
+  // UPDATED: Toggle save/unsave using database WITH TOASTIFY
   const handleSaveToggle = async () => {
     if (!isAuthenticated()) {
       toast.error('Please login to save packages');
@@ -431,7 +431,7 @@ export default function PackageDetail() {
     }
   };
 
-  // ✅ FIXED: Improved validation function
+  //  FIXED: Improved validation function
   const validateForm = () => {
     const newErrors = {};
     
@@ -473,7 +473,7 @@ export default function PackageDetail() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ FIXED: Handle booking with correct field names WITH TOASTIFY
+  //  FIXED: Handle booking with correct field names WITH TOASTIFY
   const handleBookNow = async (e) => {
     e.preventDefault();
     
@@ -506,7 +506,7 @@ export default function PackageDetail() {
       );
 
       if (response.data.success) {
-        // ✅ Show popup instead of toast
+        //  Show popup instead of toast
         setConfirmedBooking({
           packageName: packageInfo.name,
           date: bookingData.date,
@@ -722,7 +722,7 @@ export default function PackageDetail() {
         </div>
       </main>
 
-      {/* ✅ Booking Confirmation Popup */}
+      {/* Booking Confirmation Popup */}
       {showConfirmation && confirmedBooking && (
         <BookingConfirmation
           isOpen={showConfirmation}

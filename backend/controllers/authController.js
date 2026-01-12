@@ -66,7 +66,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Check password using the method defined in User model
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ 

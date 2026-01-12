@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, Users, Star, Bookmark, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios'; // ✅ ADD THIS
+import axios from 'axios'; 
 import Navbar from '../components/Navbar';
 import './DestinationDetail.css';
 import BookingConfirmation from '../components/BookingConfirmation';
