@@ -135,7 +135,6 @@ export default function SavedPackages() {
   if (loading) {
     return (
       <div className="saved-packages-page">
-        {/* Shared Navigation */}
         <Navbar />
         <div style={{ padding: '150px 20px', textAlign: 'center' }}>
           <p style={{ fontSize: '18px', color: '#6b7280' }}>Loading saved items...</p>
@@ -146,7 +145,6 @@ export default function SavedPackages() {
 
   return (
     <div className="saved-packages-page">
-      {/* Shared Navigation */}
       <Navbar />
 
       {/* Main Content */}
