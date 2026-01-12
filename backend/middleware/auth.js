@@ -34,5 +34,4 @@ const auth = (req, res, next) => {
   }
 };
 
-// ✅ EXPORT AS DEFAULT
 export default auth;
