@@ -1,12 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import auth from '../middleware/auth.js'; // Your auth middleware
+import auth from '../middleware/auth.js'; //  auth middleware
 
 const router = express.Router();
 
-// ============================================
+
 // SAVED ITEM MODEL
-// ============================================
 const savedItemSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -39,9 +38,7 @@ savedItemSchema.index({ userId: 1, itemId: 1, itemType: 1 }, { unique: true });
 
 const SavedItem = mongoose.model('SavedItem', savedItemSchema);
 
-// ============================================
 // ROUTES
-// ============================================
 
 // @route   GET /api/saved
 // @desc    Get all saved items for logged-in user
