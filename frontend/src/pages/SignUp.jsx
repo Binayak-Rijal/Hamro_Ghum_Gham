@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import "./SignUp.css";
 
-// Images from public folder
-const backgroundUrl = `/background.jpg`;
-const logoUrl = `/logo.png`;
+const backgroundUrl = `/images/background.jpg`;
+const logoUrl = `/images/logo.png`;
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -26,7 +26,6 @@ const SignUp = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
-  const checkboxRef = useRef(null);
   const submitButtonRef = useRef(null);
 
   const validateForm = () => {
@@ -94,6 +93,11 @@ const SignUp = () => {
       valid = false;
     }
 
+    if (field === "confirmPassword" && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      valid = false;
+    }
+
     setErrors(newErrors);
 
     if (!valid) return;
@@ -101,7 +105,7 @@ const SignUp = () => {
     if (field === "username") emailRef.current?.focus();
     if (field === "email") passwordRef.current?.focus();
     if (field === "password") confirmPasswordRef.current?.focus();
-    if (field === "confirmPassword") checkboxRef.current?.focus();
+    if (field === "confirmPassword") submitButtonRef.current?.focus();
   };
 
   const handleSubmit = async (e) => {
@@ -151,17 +155,27 @@ const SignUp = () => {
 
       <div className="signup-right">
         <div className="signup-form-container">
-          <Link to="/" className="signup-logo-container">
-            <img src={logoUrl} alt="Logo" className="signup-logo" />
-          </Link>
+          <div className="signup-logo-container">
+            <img
+              src={logoUrl}
+              alt="Hamro Ghum Gham Logo"
+              className="signup-logo"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div className="signup-logo-placeholder" style={{ display: 'none' }}>
+              HGG
+            </div>
+          </div>
 
           <h2 className="signup-form-title">Create Account</h2>
           <p className="signup-form-subtitle">Fill in your details to get started</p>
 
           <form onSubmit={handleSubmit} className="signup-form">
-            {/* Username */}
             <div className="signup-form-group">
-              <label>Username</label>
+              <label className="signup-label">Username</label>
               <input
                 ref={usernameRef}
                 type="text"
@@ -169,15 +183,16 @@ const SignUp = () => {
                 value={formData.username}
                 onChange={handleChange}
                 onKeyDown={(e) => handleKeyDown(e, "username")}
-                className={`signup-input ${errors.username ? "error" : ""}`}
                 placeholder="Enter your username"
+                className={`signup-input ${errors.username ? 'error' : ''}`}
               />
-              {errors.username && <span className="signup-error-text">⚠ {errors.username}</span>}
+              {errors.username && (
+                <span className="signup-error-text">⚠ {errors.username}</span>
+              )}
             </div>
 
-            {/* Email */}
             <div className="signup-form-group">
-              <label>Email</label>
+              <label className="signup-label">Email</label>
               <input
                 ref={emailRef}
                 type="email"
@@ -185,69 +200,86 @@ const SignUp = () => {
                 value={formData.email}
                 onChange={handleChange}
                 onKeyDown={(e) => handleKeyDown(e, "email")}
-                className={`signup-input ${errors.email ? "error" : ""}`}
                 placeholder="you@example.com"
+                className={`signup-input ${errors.email ? 'error' : ''}`}
               />
-              {errors.email && <span className="signup-error-text">⚠ {errors.email}</span>}
+              {errors.email && (
+                <span className="signup-error-text">⚠ {errors.email}</span>
+              )}
             </div>
 
-            {/* Password */}
             <div className="signup-form-group">
-              <label>Password</label>
-              <input
-                ref={passwordRef}
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                onKeyDown={(e) => handleKeyDown(e, "password")}
-                className={`signup-input ${errors.password ? "error" : ""}`}
-                placeholder="Create a strong password"
-              />
-              {errors.password && <span className="signup-error-text">⚠ {errors.password}</span>}
+              <label className="signup-label">Password</label>
+              <div className="password-input-wrapper">
+                <input
+                  ref={passwordRef}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onKeyDown={(e) => handleKeyDown(e, "password")}
+                  placeholder="Create a strong password"
+                  className={`signup-input ${errors.password ? 'error' : ''}`}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex="-1"
+                >
+                  {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                </button>
+              </div>
+              {errors.password && (
+                <span className="signup-error-text">⚠ {errors.password}</span>
+              )}
             </div>
 
-            {/* Confirm Password */}
             <div className="signup-form-group">
-              <label>Confirm Password</label>
-              <input
-                ref={confirmPasswordRef}
-                type={showPassword ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                onKeyDown={(e) => handleKeyDown(e, "confirmPassword")}
-                className={`signup-input ${errors.confirmPassword ? "error" : ""}`}
-                placeholder="Re-enter your password"
-              />
+              <label className="signup-label">Confirm Password</label>
+              <div className="password-input-wrapper">
+                <input
+                  ref={confirmPasswordRef}
+                  type={showPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onKeyDown={(e) => handleKeyDown(e, "confirmPassword")}
+                  placeholder="Re-enter your password"
+                  className={`signup-input ${errors.confirmPassword ? 'error' : ''}`}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex="-1"
+                >
+                  {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                </button>
+              </div>
               {errors.confirmPassword && (
                 <span className="signup-error-text">⚠ {errors.confirmPassword}</span>
               )}
             </div>
 
-            {/* Show Password */}
-            <div className="show-password-container">
-              <input
-                ref={checkboxRef}
-                type="checkbox"
-                checked={showPassword}
-                onChange={(e) => setShowPassword(e.target.checked)}
-              />
-              <label>Show Password</label>
-            </div>
-
-            {/* Submit */}
             <button
               ref={submitButtonRef}
               type="submit"
               disabled={isLoading}
               className="signup-submit-button"
             >
-              {isLoading ? "Creating Account..." : "Sign Up"}
+              {isLoading ? (
+                <>
+                  <span className="signup-spinner"></span>
+                  Creating Account...
+                </>
+              ) : (
+                'Sign Up'
+              )}
             </button>
 
             <div className="signup-login-container">
-              <span>Already have an account? </span>
+              <span className="signup-login-text">Already have an account? </span>
               <Link to="/login" className="signup-login-link">
                 Login
               </Link>
