@@ -314,7 +314,7 @@
   font-size: 16px;
 }
 
-/* ✅ NEW STYLES FOR ADD PACKAGE FORM */
+/* ✅ PACKAGES FORM STYLES */
 .packages-header {
   display: flex;
   justify-content: space-between;
@@ -364,7 +364,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   padding: 12px 15px;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
@@ -374,7 +375,8 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -399,6 +401,160 @@
   min-width: 100px;
 }
 
+/* ✅ FORM SECTIONS */
+.form-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.form-section h4 {
+  margin: 0 0 15px 0;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ✅ ARRAY INPUT STYLES */
+.array-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.array-input-group input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.array-input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-remove {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  background: #dc2626;
+}
+
+.btn-add-item {
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-add-item:hover {
+  background: #cbd5e0;
+}
+
+/* ✅ ITINERARY STYLES */
+.itinerary-input-group {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.itinerary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.itinerary-input-group input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.itinerary-input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ✅ ENHANCED IMAGE UPLOAD STYLES */
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: fit-content;
+}
+
+.custom-file-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.file-name-display {
+  color: #4a5568;
+  font-size: 14px;
+  padding: 8px 12px;
+  background: #f0f4f8;
+  border-radius: 6px;
+  font-style: italic;
+}
+
+.image-preview {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ✅ RESPONSIVE DESIGN */
 @media (max-width: 768px) {
   .admin-sidebar {
     width: 100%;
@@ -436,6 +592,18 @@
 
   .form-actions .btn-primary,
   .form-actions .btn-secondary {
+    width: 100%;
+  }
+
+  .image-preview {
+    width: 100%;
+  }
+
+  .array-input-group {
+    flex-direction: column;
+  }
+
+  .btn-remove {
     width: 100%;
   }
 }

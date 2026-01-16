@@ -1,3 +1,5 @@
+
+
 // // src/pages/AdminDashboard.jsx
 // import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -19,6 +21,25 @@
 //   const [bookings, setBookings] = useState([]);
 //   const [packages, setPackages] = useState([]);
 //   const [loading, setLoading] = useState(true);
+  
+//   // ✅ Enhanced form state for adding packages
+//   const [showAddForm, setShowAddForm] = useState(false);
+//   const [formData, setFormData] = useState({
+//     title: '',
+//     description: '',
+//     price: '',
+//     location: '',
+//     duration: '',
+//     category: 'other',
+//     difficulty: 'moderate',
+//     highlights: [''],
+//     itinerary: [{ day: 1, title: '', description: '' }],
+//     included: [''],
+//     excluded: ['']
+//   });
+//   const [imageFile, setImageFile] = useState(null);
+//   const [imagePreview, setImagePreview] = useState('');
+//   const [formLoading, setFormLoading] = useState(false);
 
 //   const API_URL = 'http://localhost:5000/api';
 
@@ -31,7 +52,6 @@
 //       setLoading(true);
 //       const headers = getAuthHeader();
 
-//       // Fetch all data
 //       const [usersRes, bookingsRes, packagesRes] = await Promise.all([
 //         axios.get(`${API_URL}/admin/users`, { headers }),
 //         axios.get(`${API_URL}/admin/bookings`, { headers }),
@@ -50,8 +70,183 @@
 //       });
 //     } catch (error) {
 //       console.error('Error fetching dashboard data:', error);
+//       alert('Error loading dashboard data');
 //     } finally {
 //       setLoading(false);
+//     }
+//   };
+
+//   // ✅ Handle image file selection
+//   const handleImageChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       if (file.size > 5 * 1024 * 1024) {
+//         alert('Image size must be less than 5MB');
+//         return;
+//       }
+//       setImageFile(file);
+//       setImagePreview(URL.createObjectURL(file));
+//     }
+//   };
+
+//   // ✅ Handle form input changes
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: value
+//     }));
+//   };
+
+//   // ✅ Handle array fields (highlights, included, excluded)
+//   const handleArrayChange = (field, index, value) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       [field]: prev[field].map((item, i) => i === index ? value : item)
+//     }));
+//   };
+
+//   const addArrayItem = (field) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       [field]: [...prev[field], '']
+//     }));
+//   };
+
+//   const removeArrayItem = (field, index) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       [field]: prev[field].filter((_, i) => i !== index)
+//     }));
+//   };
+
+//   // ✅ Handle itinerary changes
+//   const handleItineraryChange = (index, field, value) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       itinerary: prev.itinerary.map((item, i) => 
+//         i === index ? { ...item, [field]: value } : item
+//       )
+//     }));
+//   };
+
+//   const addItineraryDay = () => {
+//     setFormData(prev => ({
+//       ...prev,
+//       itinerary: [...prev.itinerary, { 
+//         day: prev.itinerary.length + 1, 
+//         title: '', 
+//         description: '' 
+//       }]
+//     }));
+//   };
+
+//   const removeItineraryDay = (index) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       itinerary: prev.itinerary.filter((_, i) => i !== index)
+//     }));
+//   };
+
+//   // ✅ Handle add package form submission
+//   const handleAddPackage = async (e) => {
+//     e.preventDefault();
+    
+//     if (!formData.title || !formData.price) {
+//       alert('Title and Price are required!');
+//       return;
+//     }
+
+//     if (!imageFile) {
+//       alert('Please select an image!');
+//       return;
+//     }
+
+//     try {
+//       setFormLoading(true);
+//       const headers = getAuthHeader();
+
+//       // Create FormData for file upload
+//       const formDataToSend = new FormData();
+//       formDataToSend.append('image', imageFile);
+//       formDataToSend.append('title', formData.title);
+//       formDataToSend.append('description', formData.description);
+//       formDataToSend.append('price', formData.price);
+//       formDataToSend.append('location', formData.location);
+//       formDataToSend.append('duration', formData.duration);
+//       formDataToSend.append('category', formData.category);
+//       formDataToSend.append('difficulty', formData.difficulty);
+      
+//       // Filter out empty values and stringify arrays
+//       formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
+//       formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
+//       formDataToSend.append('included', JSON.stringify(formData.included.filter(i => i.trim())));
+//       formDataToSend.append('excluded', JSON.stringify(formData.excluded.filter(e => e.trim())));
+
+//       const response = await axios.post(
+//         `${API_URL}/admin/packages`,
+//         formDataToSend,
+//         { 
+//           headers: {
+//             ...headers,
+//             'Content-Type': 'multipart/form-data'
+//           }
+//         }
+//       );
+
+//       if (response.data.success) {
+//         alert('Package added successfully!');
+        
+//         // Reset form
+//         setFormData({
+//           title: '',
+//           description: '',
+//           price: '',
+//           location: '',
+//           duration: '',
+//           category: 'other',
+//           difficulty: 'moderate',
+//           highlights: [''],
+//           itinerary: [{ day: 1, title: '', description: '' }],
+//           included: [''],
+//           excluded: ['']
+//         });
+//         setImageFile(null);
+//         setImagePreview('');
+//         setShowAddForm(false);
+        
+//         // Refresh packages list
+//         await fetchDashboardData();
+//       }
+//     } catch (error) {
+//       console.error('Error adding package:', error);
+//       alert(error.response?.data?.message || 'Error adding package');
+//     } finally {
+//       setFormLoading(false);
+//     }
+//   };
+
+//   // ✅ Handle delete package
+//   const handleDeletePackage = async (packageId) => {
+//     if (!window.confirm('Are you sure you want to delete this package?')) {
+//       return;
+//     }
+
+//     try {
+//       const headers = getAuthHeader();
+      
+//       const response = await axios.delete(
+//         `${API_URL}/admin/packages/${packageId}`,
+//         { headers }
+//       );
+
+//       if (response.data.success) {
+//         alert('Package deleted successfully!');
+//         await fetchDashboardData();
+//       }
+//     } catch (error) {
+//       console.error('Error deleting package:', error);
+//       alert(error.response?.data?.message || 'Error deleting package');
 //     }
 //   };
 
@@ -172,34 +367,335 @@
 //     </div>
 //   );
 
+//   // ✅ ENHANCED PACKAGES SECTION WITH FULL FORM
 //   const renderPackages = () => (
 //     <div className="packages-section">
-//       <h2>Packages Management</h2>
-//       <button className="btn-primary mb-20">Add New Package</button>
+//       <div className="packages-header">
+//         <h2>Packages Management</h2>
+//         <button 
+//           className="btn-primary"
+//           onClick={() => setShowAddForm(!showAddForm)}
+//         >
+//           {showAddForm ? '✕ Cancel' : '➕ Add New Package'}
+//         </button>
+//       </div>
+
+//       {/* ✅ COMPREHENSIVE ADD PACKAGE FORM */}
+//       {showAddForm && (
+//         <div className="add-package-form">
+//           <h3>Add New Package</h3>
+//           <form onSubmit={handleAddPackage}>
+//             {/* Basic Info */}
+//             <div className="form-section">
+//               <h4>Basic Information</h4>
+//               <div className="form-grid">
+//                 <div className="form-group">
+//                   <label>Title *</label>
+//                   <input
+//                     type="text"
+//                     name="title"
+//                     value={formData.title}
+//                     onChange={handleInputChange}
+//                     placeholder="e.g., Everest Base Camp Trek"
+//                     required
+//                   />
+//                 </div>
+
+//                 <div className="form-group">
+//                   <label>Price (NPR) *</label>
+//                   <input
+//                     type="number"
+//                     name="price"
+//                     value={formData.price}
+//                     onChange={handleInputChange}
+//                     placeholder="e.g., 25000"
+//                     required
+//                   />
+//                 </div>
+
+//                 <div className="form-group">
+//                   <label>Location</label>
+//                   <input
+//                     type="text"
+//                     name="location"
+//                     value={formData.location}
+//                     onChange={handleInputChange}
+//                     placeholder="e.g., Everest Region"
+//                   />
+//                 </div>
+
+//                 <div className="form-group">
+//                   <label>Duration</label>
+//                   <input
+//                     type="text"
+//                     name="duration"
+//                     value={formData.duration}
+//                     onChange={handleInputChange}
+//                     placeholder="e.g., 14 Days"
+//                   />
+//                 </div>
+
+//                 <div className="form-group">
+//                   <label>Category</label>
+//                   <select
+//                     name="category"
+//                     value={formData.category}
+//                     onChange={handleInputChange}
+//                   >
+//                     <option value="trekking">Trekking</option>
+//                     <option value="cultural">Cultural</option>
+//                     <option value="adventure">Adventure</option>
+//                     <option value="wildlife">Wildlife</option>
+//                     <option value="other">Other</option>
+//                   </select>
+//                 </div>
+
+//                 <div className="form-group">
+//                   <label>Difficulty</label>
+//                   <select
+//                     name="difficulty"
+//                     value={formData.difficulty}
+//                     onChange={handleInputChange}
+//                   >
+//                     <option value="easy">Easy</option>
+//                     <option value="moderate">Moderate</option>
+//                     <option value="difficult">Difficult</option>
+//                   </select>
+//                 </div>
+
+//                 <div className="form-group full-width">
+//                   <label>Description</label>
+//                   <textarea
+//                     name="description"
+//                     value={formData.description}
+//                     onChange={handleInputChange}
+//                     placeholder="Enter package description..."
+//                     rows="4"
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Image Upload */}
+//             <div className="form-section">
+//               <h4>Package Image *</h4>
+//               <div className="image-upload-container">
+//                 <input
+//                   type="file"
+//                   accept="image/*"
+//                   onChange={handleImageChange}
+//                   required
+//                   className="file-input"
+//                 />
+//                 {imagePreview && (
+//                   <div className="image-preview">
+//                     <img src={imagePreview} alt="Preview" />
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Highlights */}
+//             <div className="form-section">
+//               <h4>Highlights</h4>
+//               {formData.highlights.map((highlight, index) => (
+//                 <div key={index} className="array-input-group">
+//                   <input
+//                     type="text"
+//                     value={highlight}
+//                     onChange={(e) => handleArrayChange('highlights', index, e.target.value)}
+//                     placeholder="e.g., Everest Base Camp (5,364m)"
+//                   />
+//                   {formData.highlights.length > 1 && (
+//                     <button
+//                       type="button"
+//                       onClick={() => removeArrayItem('highlights', index)}
+//                       className="btn-remove"
+//                     >
+//                       ✕
+//                     </button>
+//                   )}
+//                 </div>
+//               ))}
+//               <button
+//                 type="button"
+//                 onClick={() => addArrayItem('highlights')}
+//                 className="btn-add-item"
+//               >
+//                 + Add Highlight
+//               </button>
+//             </div>
+
+//             {/* Itinerary */}
+//             <div className="form-section">
+//               <h4>Itinerary</h4>
+//               {formData.itinerary.map((item, index) => (
+//                 <div key={index} className="itinerary-input-group">
+//                   <div className="itinerary-header">
+//                     <strong>Day {item.day}</strong>
+//                     {formData.itinerary.length > 1 && (
+//                       <button
+//                         type="button"
+//                         onClick={() => removeItineraryDay(index)}
+//                         className="btn-remove"
+//                       >
+//                         ✕
+//                       </button>
+//                     )}
+//                   </div>
+//                   <input
+//                     type="text"
+//                     value={item.title}
+//                     onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
+//                     placeholder="Day title"
+//                   />
+//                   <input
+//                     type="text"
+//                     value={item.description}
+//                     onChange={(e) => handleItineraryChange(index, 'description', e.target.value)}
+//                     placeholder="Day description"
+//                   />
+//                 </div>
+//               ))}
+//               <button
+//                 type="button"
+//                 onClick={addItineraryDay}
+//                 className="btn-add-item"
+//               >
+//                 + Add Day
+//               </button>
+//             </div>
+
+//             {/* Included */}
+//             <div className="form-section">
+//               <h4>What's Included</h4>
+//               {formData.included.map((item, index) => (
+//                 <div key={index} className="array-input-group">
+//                   <input
+//                     type="text"
+//                     value={item}
+//                     onChange={(e) => handleArrayChange('included', index, e.target.value)}
+//                     placeholder="e.g., All meals during trek"
+//                   />
+//                   {formData.included.length > 1 && (
+//                     <button
+//                       type="button"
+//                       onClick={() => removeArrayItem('included', index)}
+//                       className="btn-remove"
+//                     >
+//                       ✕
+//                     </button>
+//                   )}
+//                 </div>
+//               ))}
+//               <button
+//                 type="button"
+//                 onClick={() => addArrayItem('included')}
+//                 className="btn-add-item"
+//               >
+//                 + Add Included Item
+//               </button>
+//             </div>
+
+//             {/* Excluded */}
+//             <div className="form-section">
+//               <h4>What's Excluded</h4>
+//               {formData.excluded.map((item, index) => (
+//                 <div key={index} className="array-input-group">
+//                   <input
+//                     type="text"
+//                     value={item}
+//                     onChange={(e) => handleArrayChange('excluded', index, e.target.value)}
+//                     placeholder="e.g., International flights"
+//                   />
+//                   {formData.excluded.length > 1 && (
+//                     <button
+//                       type="button"
+//                       onClick={() => removeArrayItem('excluded', index)}
+//                       className="btn-remove"
+//                     >
+//                       ✕
+//                     </button>
+//                   )}
+//                 </div>
+//               ))}
+//               <button
+//                 type="button"
+//                 onClick={() => addArrayItem('excluded')}
+//                 className="btn-add-item"
+//               >
+//                 + Add Excluded Item
+//               </button>
+//             </div>
+
+//             <div className="form-actions">
+//               <button 
+//                 type="submit" 
+//                 className="btn-primary"
+//                 disabled={formLoading}
+//               >
+//                 {formLoading ? 'Adding...' : '✓ Add Package'}
+//               </button>
+//               <button 
+//                 type="button" 
+//                 className="btn-secondary"
+//                 onClick={() => setShowAddForm(false)}
+//               >
+//                 Cancel
+//               </button>
+//             </div>
+//           </form>
+//         </div>
+//       )}
+
+//       {/* ✅ PACKAGES TABLE */}
 //       <div className="table-container">
 //         <table className="admin-table">
 //           <thead>
 //             <tr>
+//               <th>Image</th>
 //               <th>Title</th>
-//               <th>Destination</th>
+//               <th>Location</th>
 //               <th>Price</th>
 //               <th>Duration</th>
 //               <th>Actions</th>
 //             </tr>
 //           </thead>
 //           <tbody>
-//             {packages.map((pkg) => (
-//               <tr key={pkg._id}>
-//                 <td>{pkg.title}</td>
-//                 <td>{pkg.destination}</td>
-//                 <td>NPR {pkg.price}</td>
-//                 <td>{pkg.duration}</td>
-//                 <td>
-//                   <button className="btn-action">Edit</button>
-//                   <button className="btn-action delete">Delete</button>
+//             {packages.length === 0 ? (
+//               <tr>
+//                 <td colSpan="6" style={{ textAlign: 'center', padding: '30px' }}>
+//                   No packages found. Add your first package!
 //                 </td>
 //               </tr>
-//             ))}
+//             ) : (
+//               packages.map((pkg) => (
+//                 <tr key={pkg._id}>
+//                   <td>
+//                     {pkg.image && (
+//                       <img 
+//                         src={pkg.image} 
+//                         alt={pkg.title}
+//                         style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }}
+//                       />
+//                     )}
+//                   </td>
+//                   <td>{pkg.title}</td>
+//                   <td>{pkg.location || 'N/A'}</td>
+//                   <td>NPR {pkg.price?.toLocaleString()}</td>
+//                   <td>{pkg.duration || 'N/A'}</td>
+//                   <td>
+//                     <button className="btn-action">View</button>
+//                     <button 
+//                       className="btn-action delete"
+//                       onClick={() => handleDeletePackage(pkg._id)}
+//                     >
+//                       Delete
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))
+//             )}
 //           </tbody>
 //         </table>
 //       </div>
@@ -301,15 +797,23 @@ const AdminDashboard = () => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ✅ Form state for adding packages
+  // ✅ Enhanced form state for adding packages
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
     location: '',
-    image: ''
+    duration: '',
+    category: 'other',
+    difficulty: 'moderate',
+    highlights: [''],
+    itinerary: [{ day: 1, title: '', description: '' }],
+    included: [''],
+    excluded: ['']
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [formLoading, setFormLoading] = useState(false);
 
   const API_URL = 'http://localhost:5000/api';
@@ -323,7 +827,6 @@ const AdminDashboard = () => {
       setLoading(true);
       const headers = getAuthHeader();
 
-      // Fetch all data
       const [usersRes, bookingsRes, packagesRes] = await Promise.all([
         axios.get(`${API_URL}/admin/users`, { headers }),
         axios.get(`${API_URL}/admin/bookings`, { headers }),
@@ -348,12 +851,75 @@ const AdminDashboard = () => {
     }
   };
 
+  // ✅ Handle image file selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   // ✅ Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  // ✅ Handle array fields (highlights, included, excluded)
+  const handleArrayChange = (field, index, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  const addArrayItem = (field) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], '']
+    }));
+  };
+
+  const removeArrayItem = (field, index) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }));
+  };
+
+  // ✅ Handle itinerary changes
+  const handleItineraryChange = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.map((item, i) => 
+        i === index ? { ...item, [field]: value } : item
+      )
+    }));
+  };
+
+  const addItineraryDay = () => {
+    setFormData(prev => ({
+      ...prev,
+      itinerary: [...prev.itinerary, { 
+        day: prev.itinerary.length + 1, 
+        title: '', 
+        description: '' 
+      }]
+    }));
+  };
+
+  const removeItineraryDay = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      itinerary: prev.itinerary.filter((_, i) => i !== index)
     }));
   };
 
@@ -366,20 +932,41 @@ const AdminDashboard = () => {
       return;
     }
 
+    if (!imageFile) {
+      alert('Please select an image!');
+      return;
+    }
+
     try {
       setFormLoading(true);
       const headers = getAuthHeader();
 
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', imageFile);
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('duration', formData.duration);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('difficulty', formData.difficulty);
+      
+      // Filter out empty values and stringify arrays
+      formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
+      formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
+      formDataToSend.append('included', JSON.stringify(formData.included.filter(i => i.trim())));
+      formDataToSend.append('excluded', JSON.stringify(formData.excluded.filter(e => e.trim())));
+
       const response = await axios.post(
         `${API_URL}/admin/packages`,
-        {
-          title: formData.title,
-          description: formData.description,
-          price: Number(formData.price),
-          location: formData.location,
-          image: formData.image
-        },
-        { headers }
+        formDataToSend,
+        { 
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       );
 
       if (response.data.success) {
@@ -391,8 +978,16 @@ const AdminDashboard = () => {
           description: '',
           price: '',
           location: '',
-          image: ''
+          duration: '',
+          category: 'other',
+          difficulty: 'moderate',
+          highlights: [''],
+          itinerary: [{ day: 1, title: '', description: '' }],
+          included: [''],
+          excluded: ['']
         });
+        setImageFile(null);
+        setImagePreview('');
         setShowAddForm(false);
         
         // Refresh packages list
@@ -422,8 +1017,6 @@ const AdminDashboard = () => {
 
       if (response.data.success) {
         alert('Package deleted successfully!');
-        
-        // Refresh packages list
         await fetchDashboardData();
       }
     } catch (error) {
@@ -549,7 +1142,7 @@ const AdminDashboard = () => {
     </div>
   );
 
-  // ✅ ENHANCED PACKAGES SECTION WITH ADD FORM
+  // ✅ ENHANCED PACKAGES SECTION WITH FULL FORM
   const renderPackages = () => (
     <div className="packages-section">
       <div className="packages-header">
@@ -562,68 +1155,261 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* ✅ ADD PACKAGE FORM */}
+      {/* ✅ COMPREHENSIVE ADD PACKAGE FORM */}
       {showAddForm && (
         <div className="add-package-form">
           <h3>Add New Package</h3>
           <form onSubmit={handleAddPackage}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label>Title *</label>
+            {/* Basic Info */}
+            <div className="form-section">
+              <h4>Basic Information</h4>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Title *</label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Everest Base Camp Trek"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Price (NPR) *</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 25000"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Everest Region"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Duration</label>
+                  <input
+                    type="text"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 14 Days"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Category</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                  >
+                    <option value="trekking">Trekking</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="wildlife">Wildlife</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Difficulty</label>
+                  <select
+                    name="difficulty"
+                    value={formData.difficulty}
+                    onChange={handleInputChange}
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="difficult">Difficult</option>
+                  </select>
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Enter package description..."
+                    rows="4"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ FIXED IMAGE UPLOAD SECTION */}
+            <div className="form-section">
+              <h4>Package Image *</h4>
+              <div className="image-upload-container">
+                <label htmlFor="package-image" className="custom-file-upload">
+                  📁 Choose Image File
+                </label>
                 <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Everest Base Camp Trek"
+                  id="package-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
                   required
+                  style={{ display: 'none' }}
                 />
+                {imageFile && (
+                  <span className="file-name-display">
+                    Selected: {imageFile.name}
+                  </span>
+                )}
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img src={imagePreview} alt="Preview" />
+                  </div>
+                )}
               </div>
+            </div>
 
-              <div className="form-group">
-                <label>Price (NPR) *</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 25000"
-                  required
-                />
-              </div>
+            {/* Highlights */}
+            <div className="form-section">
+              <h4>Highlights</h4>
+              {formData.highlights.map((highlight, index) => (
+                <div key={index} className="array-input-group">
+                  <input
+                    type="text"
+                    value={highlight}
+                    onChange={(e) => handleArrayChange('highlights', index, e.target.value)}
+                    placeholder="e.g., Everest Base Camp (5,364m)"
+                  />
+                  {formData.highlights.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem('highlights', index)}
+                      className="btn-remove"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => addArrayItem('highlights')}
+                className="btn-add-item"
+              >
+                + Add Highlight
+              </button>
+            </div>
 
-              <div className="form-group">
-                <label>Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Everest Region"
-                />
-              </div>
+            {/* Itinerary */}
+            <div className="form-section">
+              <h4>Itinerary</h4>
+              {formData.itinerary.map((item, index) => (
+                <div key={index} className="itinerary-input-group">
+                  <div className="itinerary-header">
+                    <strong>Day {item.day}</strong>
+                    {formData.itinerary.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeItineraryDay(index)}
+                        className="btn-remove"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={item.title}
+                    onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
+                    placeholder="Day title"
+                  />
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => handleItineraryChange(index, 'description', e.target.value)}
+                    placeholder="Day description"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addItineraryDay}
+                className="btn-add-item"
+              >
+                + Add Day
+              </button>
+            </div>
 
-              <div className="form-group">
-                <label>Image URL</label>
-                <input
-                  type="text"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  placeholder="e.g., /images/everest.jpg"
-                />
-              </div>
+            {/* Included */}
+            <div className="form-section">
+              <h4>What's Included</h4>
+              {formData.included.map((item, index) => (
+                <div key={index} className="array-input-group">
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => handleArrayChange('included', index, e.target.value)}
+                    placeholder="e.g., All meals during trek"
+                  />
+                  {formData.included.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem('included', index)}
+                      className="btn-remove"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => addArrayItem('included')}
+                className="btn-add-item"
+              >
+                + Add Included Item
+              </button>
+            </div>
 
-              <div className="form-group full-width">
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Enter package description..."
-                  rows="4"
-                />
-              </div>
+            {/* Excluded */}
+            <div className="form-section">
+              <h4>What's Excluded</h4>
+              {formData.excluded.map((item, index) => (
+                <div key={index} className="array-input-group">
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => handleArrayChange('excluded', index, e.target.value)}
+                    placeholder="e.g., International flights"
+                  />
+                  {formData.excluded.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem('excluded', index)}
+                      className="btn-remove"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => addArrayItem('excluded')}
+                className="btn-add-item"
+              >
+                + Add Excluded Item
+              </button>
             </div>
 
             <div className="form-actions">
@@ -651,27 +1437,37 @@ const AdminDashboard = () => {
         <table className="admin-table">
           <thead>
             <tr>
+              <th>Image</th>
               <th>Title</th>
               <th>Location</th>
               <th>Price</th>
-              <th>Created</th>
+              <th>Duration</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {packages.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ textAlign: 'center', padding: '30px' }}>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '30px' }}>
                   No packages found. Add your first package!
                 </td>
               </tr>
             ) : (
               packages.map((pkg) => (
                 <tr key={pkg._id}>
+                  <td>
+                    {pkg.image && (
+                      <img 
+                        src={pkg.image} 
+                        alt={pkg.title}
+                        style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }}
+                      />
+                    )}
+                  </td>
                   <td>{pkg.title}</td>
                   <td>{pkg.location || 'N/A'}</td>
                   <td>NPR {pkg.price?.toLocaleString()}</td>
-                  <td>{new Date(pkg.createdAt).toLocaleDateString()}</td>
+                  <td>{pkg.duration || 'N/A'}</td>
                   <td>
                     <button className="btn-action">View</button>
                     <button 
@@ -759,3 +1555,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

@@ -1,3 +1,6 @@
+
+
+
 // // backend/routes/admin.js
 // import express from 'express';
 // import auth, { adminOnly } from '../middleware/auth.js';
@@ -40,6 +43,62 @@
 //   }
 // });
 
+// // ✅ ADD NEW PACKAGE (Admin only)
+// router.post('/packages', auth, adminOnly, async (req, res) => {
+//   try {
+//     const { title, description, price, location, image } = req.body;
+
+//     // Validation
+//     if (!title || !price) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: 'Title and price are required' 
+//       });
+//     }
+
+//     const newPackage = new Package({
+//       title,
+//       description,
+//       price,
+//       location,
+//       image
+//     });
+
+//     await newPackage.save();
+
+//     res.status(201).json({ 
+//       success: true, 
+//       message: 'Package added successfully',
+//       package: newPackage 
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+
+// // ✅ DELETE PACKAGE (Admin only)
+// router.delete('/packages/:id', auth, adminOnly, async (req, res) => {
+//   try {
+//     const package_ = await Package.findById(req.params.id);
+    
+//     if (!package_) {
+//       return res.status(404).json({ 
+//         success: false, 
+//         message: 'Package not found' 
+//       });
+//     }
+
+//     await package_.deleteOne();
+    
+//     res.json({ 
+//       success: true, 
+//       message: 'Package deleted successfully' 
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+
 // // Delete user (Admin only)
 // router.delete('/users/:id', auth, adminOnly, async (req, res) => {
 //   try {
@@ -76,15 +135,54 @@
 // export default router;
 
 
-
 // backend/routes/admin.js
 import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import auth, { adminOnly } from '../middleware/auth.js';
 import User from '../models/User.js';
 import Booking from '../models/Booking.js';
 import Package from '../models/Package.js';
 
 const router = express.Router();
+
+// ✅ Get __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Configure Multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Save to frontend/public/images directory
+    const uploadPath = path.join(__dirname, '../../frontend/public/images');
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+
+// File filter - only accept images
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedTypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'));
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 
 // Get all users (Admin only)
 router.get('/users', auth, adminOnly, async (req, res) => {
@@ -119,10 +217,22 @@ router.get('/packages', auth, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ ADD NEW PACKAGE (Admin only)
-router.post('/packages', auth, adminOnly, async (req, res) => {
+// ✅ ADD NEW PACKAGE WITH IMAGE UPLOAD (Admin only)
+router.post('/packages', auth, adminOnly, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, price, location, image } = req.body;
+    const { 
+      title, 
+      description, 
+      price, 
+      location, 
+      duration,
+      category,
+      difficulty,
+      highlights,
+      itinerary,
+      included,
+      excluded
+    } = req.body;
 
     // Validation
     if (!title || !price) {
@@ -132,12 +242,28 @@ router.post('/packages', auth, adminOnly, async (req, res) => {
       });
     }
 
+    // Get image path (if uploaded)
+    const imagePath = req.file ? `/images/${req.file.filename}` : '';
+
+    // Parse JSON strings if needed
+    const parsedHighlights = highlights ? JSON.parse(highlights) : [];
+    const parsedItinerary = itinerary ? JSON.parse(itinerary) : [];
+    const parsedIncluded = included ? JSON.parse(included) : [];
+    const parsedExcluded = excluded ? JSON.parse(excluded) : [];
+
     const newPackage = new Package({
       title,
       description,
-      price,
+      price: Number(price),
       location,
-      image
+      image: imagePath,
+      duration,
+      category,
+      difficulty,
+      highlights: parsedHighlights,
+      itinerary: parsedItinerary,
+      included: parsedIncluded,
+      excluded: parsedExcluded
     });
 
     await newPackage.save();
@@ -148,6 +274,7 @@ router.post('/packages', auth, adminOnly, async (req, res) => {
       package: newPackage 
     });
   } catch (error) {
+    console.error('Error adding package:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
