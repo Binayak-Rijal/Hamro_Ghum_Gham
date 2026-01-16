@@ -1,5 +1,7 @@
 
 
+
+
 // // src/pages/AdminDashboard.jsx
 // import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -476,17 +478,26 @@
 //               </div>
 //             </div>
 
-//             {/* Image Upload */}
+//             {/* ✅ FIXED IMAGE UPLOAD SECTION */}
 //             <div className="form-section">
 //               <h4>Package Image *</h4>
 //               <div className="image-upload-container">
+//                 <label htmlFor="package-image" className="custom-file-upload">
+//                   📁 Choose Image File
+//                 </label>
 //                 <input
+//                   id="package-image"
 //                   type="file"
 //                   accept="image/*"
 //                   onChange={handleImageChange}
 //                   required
-//                   className="file-input"
+//                   style={{ display: 'none' }}
 //                 />
+//                 {imageFile && (
+//                   <span className="file-name-display">
+//                     Selected: {imageFile.name}
+//                   </span>
+//                 )}
 //                 {imagePreview && (
 //                   <div className="image-preview">
 //                     <img src={imagePreview} alt="Preview" />
@@ -797,8 +808,10 @@ const AdminDashboard = () => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ✅ Enhanced form state for adding packages
+  // Form states
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false); // ✅ NEW
+  const [editingPackageId, setEditingPackageId] = useState(null); // ✅ NEW
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -814,6 +827,7 @@ const AdminDashboard = () => {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [existingImage, setExistingImage] = useState(''); // ✅ NEW - for keeping old image
   const [formLoading, setFormLoading] = useState(false);
 
   const API_URL = 'http://localhost:5000/api';
@@ -851,7 +865,46 @@ const AdminDashboard = () => {
     }
   };
 
-  // ✅ Handle image file selection
+  // ✅ NEW: Fetch single package for editing
+  const handleEditPackage = async (packageId) => {
+    try {
+      const headers = getAuthHeader();
+      const response = await axios.get(`${API_URL}/admin/packages/${packageId}`, { headers });
+      
+      if (response.data.success) {
+        const pkg = response.data.package;
+        
+        // Populate form with existing data
+        setFormData({
+          title: pkg.title || '',
+          description: pkg.description || '',
+          price: pkg.price || '',
+          location: pkg.location || '',
+          duration: pkg.duration || '',
+          category: pkg.category || 'other',
+          difficulty: pkg.difficulty || 'moderate',
+          highlights: pkg.highlights?.length > 0 ? pkg.highlights : [''],
+          itinerary: pkg.itinerary?.length > 0 ? pkg.itinerary : [{ day: 1, title: '', description: '' }],
+          included: pkg.included?.length > 0 ? pkg.included : [''],
+          excluded: pkg.excluded?.length > 0 ? pkg.excluded : ['']
+        });
+        
+        setExistingImage(pkg.image || '');
+        setImagePreview(pkg.image || '');
+        setEditingPackageId(packageId);
+        setShowEditForm(true);
+        setShowAddForm(false);
+        
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } catch (error) {
+      console.error('Error fetching package:', error);
+      alert('Error loading package data');
+    }
+  };
+
+  // Handle image file selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -864,7 +917,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // ✅ Handle form input changes
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -873,7 +926,7 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Handle array fields (highlights, included, excluded)
+  // Handle array fields
   const handleArrayChange = (field, index, value) => {
     setFormData(prev => ({
       ...prev,
@@ -895,7 +948,7 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Handle itinerary changes
+  // Handle itinerary changes
   const handleItineraryChange = (index, field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -923,7 +976,30 @@ const AdminDashboard = () => {
     }));
   };
 
-  // ✅ Handle add package form submission
+  // Reset form to initial state
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      price: '',
+      location: '',
+      duration: '',
+      category: 'other',
+      difficulty: 'moderate',
+      highlights: [''],
+      itinerary: [{ day: 1, title: '', description: '' }],
+      included: [''],
+      excluded: ['']
+    });
+    setImageFile(null);
+    setImagePreview('');
+    setExistingImage('');
+    setEditingPackageId(null);
+    setShowAddForm(false);
+    setShowEditForm(false);
+  };
+
+  // Handle add package
   const handleAddPackage = async (e) => {
     e.preventDefault();
     
@@ -941,7 +1017,6 @@ const AdminDashboard = () => {
       setFormLoading(true);
       const headers = getAuthHeader();
 
-      // Create FormData for file upload
       const formDataToSend = new FormData();
       formDataToSend.append('image', imageFile);
       formDataToSend.append('title', formData.title);
@@ -952,7 +1027,6 @@ const AdminDashboard = () => {
       formDataToSend.append('category', formData.category);
       formDataToSend.append('difficulty', formData.difficulty);
       
-      // Filter out empty values and stringify arrays
       formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
       formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
       formDataToSend.append('included', JSON.stringify(formData.included.filter(i => i.trim())));
@@ -971,26 +1045,7 @@ const AdminDashboard = () => {
 
       if (response.data.success) {
         alert('Package added successfully!');
-        
-        // Reset form
-        setFormData({
-          title: '',
-          description: '',
-          price: '',
-          location: '',
-          duration: '',
-          category: 'other',
-          difficulty: 'moderate',
-          highlights: [''],
-          itinerary: [{ day: 1, title: '', description: '' }],
-          included: [''],
-          excluded: ['']
-        });
-        setImageFile(null);
-        setImagePreview('');
-        setShowAddForm(false);
-        
-        // Refresh packages list
+        resetForm();
         await fetchDashboardData();
       }
     } catch (error) {
@@ -1001,7 +1056,64 @@ const AdminDashboard = () => {
     }
   };
 
-  // ✅ Handle delete package
+  // ✅ NEW: Handle update package
+  const handleUpdatePackage = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.title || !formData.price) {
+      alert('Title and Price are required!');
+      return;
+    }
+
+    try {
+      setFormLoading(true);
+      const headers = getAuthHeader();
+
+      const formDataToSend = new FormData();
+      
+      // Only append image if new file selected
+      if (imageFile) {
+        formDataToSend.append('image', imageFile);
+      }
+      
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('duration', formData.duration);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('difficulty', formData.difficulty);
+      
+      formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
+      formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
+      formDataToSend.append('included', JSON.stringify(formData.included.filter(i => i.trim())));
+      formDataToSend.append('excluded', JSON.stringify(formData.excluded.filter(e => e.trim())));
+
+      const response = await axios.put(
+        `${API_URL}/admin/packages/${editingPackageId}`,
+        formDataToSend,
+        { 
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        alert('Package updated successfully!');
+        resetForm();
+        await fetchDashboardData();
+      }
+    } catch (error) {
+      console.error('Error updating package:', error);
+      alert(error.response?.data?.message || 'Error updating package');
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  // Handle delete package
   const handleDeletePackage = async (packageId) => {
     if (!window.confirm('Are you sure you want to delete this package?')) {
       return;
@@ -1142,297 +1254,313 @@ const AdminDashboard = () => {
     </div>
   );
 
-  // ✅ ENHANCED PACKAGES SECTION WITH FULL FORM
+  // ✅ PACKAGE FORM COMPONENT (Reusable for both Add and Edit)
+  const renderPackageForm = (isEdit = false) => (
+    <div className="add-package-form">
+      <h3>{isEdit ? 'Edit Package' : 'Add New Package'}</h3>
+      <form onSubmit={isEdit ? handleUpdatePackage : handleAddPackage}>
+        {/* Basic Info */}
+        <div className="form-section">
+          <h4>Basic Information</h4>
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="e.g., Everest Base Camp Trek"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Price (NPR) *</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                placeholder="e.g., 25000"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="e.g., Everest Region"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Duration</label>
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
+                onChange={handleInputChange}
+                placeholder="e.g., 14 Days"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Category</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+              >
+                <option value="trekking">Trekking</option>
+                <option value="cultural">Cultural</option>
+                <option value="adventure">Adventure</option>
+                <option value="wildlife">Wildlife</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Difficulty</label>
+              <select
+                name="difficulty"
+                value={formData.difficulty}
+                onChange={handleInputChange}
+              >
+                <option value="easy">Easy</option>
+                <option value="moderate">Moderate</option>
+                <option value="difficult">Difficult</option>
+              </select>
+            </div>
+
+            <div className="form-group full-width">
+              <label>Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter package description..."
+                rows="4"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Image Upload */}
+        <div className="form-section">
+          <h4>Package Image {!isEdit && '*'}</h4>
+          <div className="image-upload-container">
+            <label htmlFor="package-image" className="custom-file-upload">
+              📁 {isEdit ? 'Change Image (Optional)' : 'Choose Image File'}
+            </label>
+            <input
+              id="package-image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              required={!isEdit}
+              style={{ display: 'none' }}
+            />
+            {imageFile && (
+              <span className="file-name-display">
+                Selected: {imageFile.name}
+              </span>
+            )}
+            {imagePreview && (
+              <div className="image-preview">
+                <img src={imagePreview} alt="Preview" />
+                {isEdit && !imageFile && existingImage && (
+                  <p style={{ marginTop: '10px', color: '#666', fontSize: '14px' }}>
+                    Current image (will be kept if no new image selected)
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Highlights */}
+        <div className="form-section">
+          <h4>Highlights</h4>
+          {formData.highlights.map((highlight, index) => (
+            <div key={index} className="array-input-group">
+              <input
+                type="text"
+                value={highlight}
+                onChange={(e) => handleArrayChange('highlights', index, e.target.value)}
+                placeholder="e.g., Everest Base Camp (5,364m)"
+              />
+              {formData.highlights.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem('highlights', index)}
+                  className="btn-remove"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayItem('highlights')}
+            className="btn-add-item"
+          >
+            + Add Highlight
+          </button>
+        </div>
+
+        {/* Itinerary */}
+        <div className="form-section">
+          <h4>Itinerary</h4>
+          {formData.itinerary.map((item, index) => (
+            <div key={index} className="itinerary-input-group">
+              <div className="itinerary-header">
+                <strong>Day {item.day}</strong>
+                {formData.itinerary.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeItineraryDay(index)}
+                    className="btn-remove"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <input
+                type="text"
+                value={item.title}
+                onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
+                placeholder="Day title"
+              />
+              <input
+                type="text"
+                value={item.description}
+                onChange={(e) => handleItineraryChange(index, 'description', e.target.value)}
+                placeholder="Day description"
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addItineraryDay}
+            className="btn-add-item"
+          >
+            + Add Day
+          </button>
+        </div>
+
+        {/* Included */}
+        <div className="form-section">
+          <h4>What's Included</h4>
+          {formData.included.map((item, index) => (
+            <div key={index} className="array-input-group">
+              <input
+                type="text"
+                value={item}
+                onChange={(e) => handleArrayChange('included', index, e.target.value)}
+                placeholder="e.g., All meals during trek"
+              />
+              {formData.included.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem('included', index)}
+                  className="btn-remove"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayItem('included')}
+            className="btn-add-item"
+          >
+            + Add Included Item
+          </button>
+        </div>
+
+        {/* Excluded */}
+        <div className="form-section">
+          <h4>What's Excluded</h4>
+          {formData.excluded.map((item, index) => (
+            <div key={index} className="array-input-group">
+              <input
+                type="text"
+                value={item}
+                onChange={(e) => handleArrayChange('excluded', index, e.target.value)}
+                placeholder="e.g., International flights"
+              />
+              {formData.excluded.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem('excluded', index)}
+                  className="btn-remove"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => addArrayItem('excluded')}
+            className="btn-add-item"
+          >
+            + Add Excluded Item
+          </button>
+        </div>
+
+        <div className="form-actions">
+          <button 
+            type="submit" 
+            className="btn-primary"
+            disabled={formLoading}
+          >
+            {formLoading ? (isEdit ? 'Updating...' : 'Adding...') : (isEdit ? '✓ Update Package' : '✓ Add Package')}
+          </button>
+          <button 
+            type="button" 
+            className="btn-secondary"
+            onClick={resetForm}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+
+  // ✅ ENHANCED PACKAGES SECTION
   const renderPackages = () => (
     <div className="packages-section">
       <div className="packages-header">
         <h2>Packages Management</h2>
         <button 
           className="btn-primary"
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            if (showEditForm) {
+              resetForm();
+            }
+            setShowAddForm(!showAddForm);
+          }}
         >
           {showAddForm ? '✕ Cancel' : '➕ Add New Package'}
         </button>
       </div>
 
-      {/* ✅ COMPREHENSIVE ADD PACKAGE FORM */}
-      {showAddForm && (
-        <div className="add-package-form">
-          <h3>Add New Package</h3>
-          <form onSubmit={handleAddPackage}>
-            {/* Basic Info */}
-            <div className="form-section">
-              <h4>Basic Information</h4>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Title *</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Everest Base Camp Trek"
-                    required
-                  />
-                </div>
+      {/* Show Add Form */}
+      {showAddForm && renderPackageForm(false)}
 
-                <div className="form-group">
-                  <label>Price (NPR) *</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 25000"
-                    required
-                  />
-                </div>
+      {/* Show Edit Form */}
+      {showEditForm && renderPackageForm(true)}
 
-                <div className="form-group">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Everest Region"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Duration</label>
-                  <input
-                    type="text"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 14 Days"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Category</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                  >
-                    <option value="trekking">Trekking</option>
-                    <option value="cultural">Cultural</option>
-                    <option value="adventure">Adventure</option>
-                    <option value="wildlife">Wildlife</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>Difficulty</label>
-                  <select
-                    name="difficulty"
-                    value={formData.difficulty}
-                    onChange={handleInputChange}
-                  >
-                    <option value="easy">Easy</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="difficult">Difficult</option>
-                  </select>
-                </div>
-
-                <div className="form-group full-width">
-                  <label>Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Enter package description..."
-                    rows="4"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ✅ FIXED IMAGE UPLOAD SECTION */}
-            <div className="form-section">
-              <h4>Package Image *</h4>
-              <div className="image-upload-container">
-                <label htmlFor="package-image" className="custom-file-upload">
-                  📁 Choose Image File
-                </label>
-                <input
-                  id="package-image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  required
-                  style={{ display: 'none' }}
-                />
-                {imageFile && (
-                  <span className="file-name-display">
-                    Selected: {imageFile.name}
-                  </span>
-                )}
-                {imagePreview && (
-                  <div className="image-preview">
-                    <img src={imagePreview} alt="Preview" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Highlights */}
-            <div className="form-section">
-              <h4>Highlights</h4>
-              {formData.highlights.map((highlight, index) => (
-                <div key={index} className="array-input-group">
-                  <input
-                    type="text"
-                    value={highlight}
-                    onChange={(e) => handleArrayChange('highlights', index, e.target.value)}
-                    placeholder="e.g., Everest Base Camp (5,364m)"
-                  />
-                  {formData.highlights.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem('highlights', index)}
-                      className="btn-remove"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem('highlights')}
-                className="btn-add-item"
-              >
-                + Add Highlight
-              </button>
-            </div>
-
-            {/* Itinerary */}
-            <div className="form-section">
-              <h4>Itinerary</h4>
-              {formData.itinerary.map((item, index) => (
-                <div key={index} className="itinerary-input-group">
-                  <div className="itinerary-header">
-                    <strong>Day {item.day}</strong>
-                    {formData.itinerary.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeItineraryDay(index)}
-                        className="btn-remove"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    value={item.title}
-                    onChange={(e) => handleItineraryChange(index, 'title', e.target.value)}
-                    placeholder="Day title"
-                  />
-                  <input
-                    type="text"
-                    value={item.description}
-                    onChange={(e) => handleItineraryChange(index, 'description', e.target.value)}
-                    placeholder="Day description"
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addItineraryDay}
-                className="btn-add-item"
-              >
-                + Add Day
-              </button>
-            </div>
-
-            {/* Included */}
-            <div className="form-section">
-              <h4>What's Included</h4>
-              {formData.included.map((item, index) => (
-                <div key={index} className="array-input-group">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayChange('included', index, e.target.value)}
-                    placeholder="e.g., All meals during trek"
-                  />
-                  {formData.included.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem('included', index)}
-                      className="btn-remove"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem('included')}
-                className="btn-add-item"
-              >
-                + Add Included Item
-              </button>
-            </div>
-
-            {/* Excluded */}
-            <div className="form-section">
-              <h4>What's Excluded</h4>
-              {formData.excluded.map((item, index) => (
-                <div key={index} className="array-input-group">
-                  <input
-                    type="text"
-                    value={item}
-                    onChange={(e) => handleArrayChange('excluded', index, e.target.value)}
-                    placeholder="e.g., International flights"
-                  />
-                  {formData.excluded.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeArrayItem('excluded', index)}
-                      className="btn-remove"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addArrayItem('excluded')}
-                className="btn-add-item"
-              >
-                + Add Excluded Item
-              </button>
-            </div>
-
-            <div className="form-actions">
-              <button 
-                type="submit" 
-                className="btn-primary"
-                disabled={formLoading}
-              >
-                {formLoading ? 'Adding...' : '✓ Add Package'}
-              </button>
-              <button 
-                type="button" 
-                className="btn-secondary"
-                onClick={() => setShowAddForm(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* ✅ PACKAGES TABLE */}
+      {/* Packages Table */}
       <div className="table-container">
         <table className="admin-table">
           <thead>
@@ -1469,7 +1597,12 @@ const AdminDashboard = () => {
                   <td>NPR {pkg.price?.toLocaleString()}</td>
                   <td>{pkg.duration || 'N/A'}</td>
                   <td>
-                    <button className="btn-action">View</button>
+                    <button 
+                      className="btn-action"
+                      onClick={() => handleEditPackage(pkg._id)}
+                    >
+                      Edit
+                    </button>
                     <button 
                       className="btn-action delete"
                       onClick={() => handleDeletePackage(pkg._id)}
@@ -1555,4 +1688,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
