@@ -303,281 +303,213 @@
 // }
 
 
-
-// frontend/src/pages/Tours.jsx (or HomePage.jsx)
+// frontend/src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Calendar, Star, Filter, Search } from 'lucide-react';
+import { ChevronRight, Star, MapPin, Calendar, Users, Bookmark } from 'lucide-react';
+import './HomePage.css';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
-import './Tours.css';
 
-export default function Tours() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [priceRange, setPriceRange] = useState('all');
-  
-  // ✅ NEW: State for packages from database
-  const [allPackages, setAllPackages] = useState([]);
+export default function HomePage() {
+  // ✅ State for popular packages from database
+  const [popularPackages, setPopularPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const API_URL = 'http://localhost:5000/api';
 
-  // ✅ Fetch packages from database on component mount
+  // ✅ Fetch popular packages on component mount
   useEffect(() => {
-    fetchPackages();
+    fetchPopularPackages();
   }, []);
 
-  const fetchPackages = async () => {
+  const fetchPopularPackages = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/packages`);
+      const response = await axios.get(`${API_URL}/packages/popular`);
       
       if (response.data.success) {
-        setAllPackages(response.data.packages);
+        setPopularPackages(response.data.packages);
       }
     } catch (error) {
-      console.error('Error fetching packages:', error);
-      setError('Failed to load packages');
+      console.error('Error fetching popular packages:', error);
+      setError('Failed to load popular packages');
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter packages
-  const filteredPackages = allPackages.filter(pkg => {
-    const matchesCategory = selectedCategory === 'all' || pkg.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'all' || pkg.difficulty === selectedDifficulty;
-    const matchesSearch = pkg.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         pkg.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         pkg.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    let matchesPrice = true;
-    if (priceRange === 'budget') matchesPrice = pkg.price < 500;
-    else if (priceRange === 'mid') matchesPrice = pkg.price >= 500 && pkg.price < 1000;
-    else if (priceRange === 'luxury') matchesPrice = pkg.price >= 1000;
-
-    return matchesCategory && matchesDifficulty && matchesSearch && matchesPrice;
-  });
-
-  // ✅ Loading state
-  if (loading) {
-    return (
-      <div className="tours-page">
-        <Navbar />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh' 
-        }}>
-          <div className="spinner"></div>
-          <p style={{ marginLeft: '20px' }}>Loading packages...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ✅ Error state
-  if (error) {
-    return (
-      <div className="tours-page">
-        <Navbar />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh',
-          flexDirection: 'column' 
-        }}>
-          <p style={{ color: '#ef4444', fontSize: '18px' }}>{error}</p>
-          <button 
-            onClick={fetchPackages}
-            style={{
-              marginTop: '20px',
-              padding: '10px 20px',
-              background: '#f97316',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="tours-page">
+    <div className="homepage">
       {/* Shared Navigation */}
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="tours-hero">
-        <div className="tours-hero-content">
-          <h1 className="tours-hero-title">Explore Our Tours</h1>
-          <p className="tours-hero-subtitle">Discover amazing adventures across Nepal</p>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <main className="tours-main">
-        <div className="tours-container">
-          {/* Filters Sidebar */}
-          <aside className="tours-filters">
-            <div className="filters-header">
-              <Filter className="filter-icon" />
-              <h3>Filters</h3>
+      {/* Rest of the component */}
+      <main className="main-content">
+        {/* Hero Section */}
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-badge">
+              <span>✈️</span>
+              <span>Explore the world!</span>
             </div>
 
-            {/* Search */}
-            <div className="filter-group">
-              <label className="filter-label">Search</label>
-              <div className="search-input-wrapper">
-                <Search className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Search tours..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input"
-                />
+            <h1 className="hero-title">
+              Traveling opens the door<br />
+              to creating <span className="highlight">memories</span>
+            </h1>
+
+            <p className="hero-description">
+              Discover amazing destinations, create unforgettable experiences, and explore Nepal and beyond. We provide the best travel experiences.
+            </p>
+
+            <div className="hero-buttons">
+              <Link to="/tours" className="btn-primary">
+                Find out more
+                <ChevronRight className="icon-small" />
+              </Link>
+            </div>
+
+            <div className="stats-grid">
+              <div className="stat-item">
+                <p className="stat-number">700+</p>
+                <p className="stat-label">Destinations</p>
+              </div>
+              <div className="stat-item">
+                <p className="stat-number">350+</p>
+                <p className="stat-label">Hotels</p>
+              </div>
+              <div className="stat-item">
+                <p className="stat-number">200+</p>
+                <p className="stat-label">Tour Guides</p>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Category Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Category</label>
-              <select 
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Categories</option>
-                <option value="trekking">Trekking</option>
-                <option value="cultural">Cultural</option>
-                <option value="adventure">Adventure</option>
-                <option value="wildlife">Wildlife</option>
-              </select>
+        {/* Popular Packages Section - NOW FROM DATABASE */}
+        <section className="packages-section">
+          <div className="packages-container">
+            <div className="section-header">
+              <h2 className="section-title">Popular Packages</h2>
+              <p className="section-subtitle">Explore our most loved destinations in Nepal</p>
             </div>
 
-            {/* Difficulty Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Difficulty</label>
-              <select 
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Levels</option>
-                <option value="easy">Easy</option>
-                <option value="moderate">Moderate</option>
-                <option value="difficult">Difficult</option>
-              </select>
-            </div>
+            {/* Loading State */}
+            {loading && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '4rem 0',
+                color: '#6b7280'
+              }}>
+                <p style={{ fontSize: '1.125rem' }}>Loading popular packages...</p>
+              </div>
+            )}
 
-            {/* Price Range Filter */}
-            <div className="filter-group">
-              <label className="filter-label">Price Range</label>
-              <select 
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Prices</option>
-                <option value="budget">Budget (&lt; $500)</option>
-                <option value="mid">Mid-Range ($500 - $1000)</option>
-                <option value="luxury">Luxury ($1000+)</option>
-              </select>
-            </div>
-
-            {/* Reset Filters */}
-            <button 
-              className="reset-filters-btn"
-              onClick={() => {
-                setSelectedCategory('all');
-                setSelectedDifficulty('all');
-                setSearchQuery('');
-                setPriceRange('all');
-              }}
-            >
-              Reset Filters
-            </button>
-          </aside>
-
-          {/* Tours Grid */}
-          <section className="tours-content">
-            <div className="tours-header">
-              <h2 className="tours-count">
-                {filteredPackages.length} {filteredPackages.length === 1 ? 'Tour' : 'Tours'} Available
-              </h2>
-            </div>
-
-            {filteredPackages.length === 0 ? (
-              <div className="no-results">
-                <p>No tours found matching your criteria.</p>
+            {/* Error State */}
+            {error && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '4rem 0'
+              }}>
+                <p style={{ color: '#ef4444', fontSize: '1.125rem', marginBottom: '1rem' }}>
+                  {error}
+                </p>
                 <button 
-                  className="btn-reset"
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    setSelectedDifficulty('all');
-                    setSearchQuery('');
-                    setPriceRange('all');
-                  }}
+                  onClick={fetchPopularPackages}
+                  className="btn-primary"
+                  style={{ display: 'inline-flex' }}
                 >
-                  Clear Filters
+                  Retry
                 </button>
               </div>
-            ) : (
-              <div className="tours-grid">
-                {filteredPackages.map((pkg) => (
+            )}
+
+            {/* No Packages State */}
+            {!loading && !error && popularPackages.length === 0 && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '4rem 2rem',
+                background: 'rgba(249, 115, 22, 0.05)',
+                borderRadius: '1rem',
+                border: '2px dashed rgba(249, 115, 22, 0.2)'
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.5rem', 
+                  color: '#111827', 
+                  marginBottom: '1rem',
+                  fontWeight: '700'
+                }}>
+                  No Popular Packages Available Yet
+                </h3>
+                <p style={{ 
+                  color: '#6b7280', 
+                  marginBottom: '1.5rem',
+                  fontSize: '1rem'
+                }}>
+                  We're currently adding amazing tour packages. Popular packages include: 
+                  Pokhara, Mustang, Manang, Everest Base Camp, and Annapurna Base Camp.
+                </p>
+                <Link 
+                  to="/tours" 
+                  className="btn-primary"
+                  style={{ display: 'inline-flex' }}
+                >
+                  View All Tours
+                  <ChevronRight className="icon-small" />
+                </Link>
+              </div>
+            )}
+
+            {/* Popular Packages Grid - FROM DATABASE */}
+            {!loading && !error && popularPackages.length > 0 && (
+              <div className="packages-grid">
+                {popularPackages.map((pkg) => (
                   <Link 
                     key={pkg._id} 
                     to={`/package/${pkg._id}`} 
-                    className="tour-card-link"
+                    className="package-card-link"
                   >
-                    <div className="tour-card">
-                      <div className="tour-image-container">
+                    <div className="package-card">
+                      <div className="package-image-container">
                         <img 
                           src={pkg.image || '/images/default.jpg'} 
                           alt={pkg.title} 
-                          className="tour-image" 
+                          className="package-image"
+                          onError={(e) => {
+                            e.target.src = '/images/default.jpg';
+                          }}
                         />
-                        <div className="tour-badge">{pkg.category || 'Featured'}</div>
+                        <div className="package-badge">
+                          {pkg.category ? pkg.category.charAt(0).toUpperCase() + pkg.category.slice(1) : 'Featured'}
+                        </div>
                       </div>
-                      <div className="tour-content">
-                        <h3 className="tour-title">{pkg.title}</h3>
-                        <div className="tour-location">
-                          <MapPin className="tour-icon" />
-                          <span>{pkg.location || 'Nepal'}</span>
-                        </div>
-                        <p className="tour-description">
-                          {pkg.description?.substring(0, 120)}...
+                      <div className="package-content">
+                        <h3 className="package-title">{pkg.title}</h3>
+                        <p className="package-description">
+                          {pkg.description 
+                            ? `${pkg.description.substring(0, 120)}...` 
+                            : 'Discover the beauty and adventure of this amazing destination.'}
                         </p>
-                        
-                        <div className="tour-meta">
-                          <div className="tour-rating">
-                            <Star className="star-icon" fill="#f97316" />
-                            <span>{pkg.rating || 4.5}</span>
-                            <span className="reviews-count">({pkg.reviews || 0})</span>
+                        <div className="package-features">
+                          <div className="package-feature">
+                            <Calendar className="feature-icon" />
+                            <span>{pkg.duration || 'Multiple Days'}</span>
                           </div>
-                          <div className="tour-duration">
-                            <Calendar className="tour-icon" />
-                            <span>{pkg.duration || 'N/A'}</span>
+                          <div className="package-feature">
+                            <MapPin className="feature-icon" />
+                            <span>{pkg.location || 'Nepal'}</span>
                           </div>
                         </div>
-
-                        <div className="tour-footer">
-                          <div className="tour-price">
-                            <span className="price-from">From</span>
-                            <span className="price-amount">NPR {pkg.price?.toLocaleString()}</span>
+                        <div className="package-footer">
+                          <div className="package-price">
+                            <span className="price-label">From</span>
+                            <span className="price-amount">
+                              NPR {pkg.price?.toLocaleString() || 'N/A'}
+                            </span>
                           </div>
-                          <button className="btn-view-details">View Details</button>
+                          <button className="btn-book">Book Now</button>
                         </div>
                       </div>
                     </div>
@@ -585,8 +517,119 @@ export default function Tours() {
                 ))}
               </div>
             )}
-          </section>
-        </div>
+          </div>
+        </section>
+
+        {/* Popular Destinations Section - KEEP AS IS (STATIC) */}
+        <section className="packages-section">
+          <div className="packages-container">
+            <div className="section-header">
+              <h2 className="section-title">Popular Destinations</h2>
+              <p className="section-subtitle">Discover the most visited places in Nepal</p>
+            </div>
+
+            <div className="packages-grid">
+              {/* Kathmandu Card */}
+              <Link to="/destination/kathmandu" className="package-card-link">
+                <div className="package-card">
+                  <div className="package-image-container">
+                    <img src="/images/kathmandu.jpg" alt="Kathmandu" className="package-image" />
+                    <div className="package-badge">Capital City</div>
+                  </div>
+                  <div className="package-content">
+                    <h3 className="package-title">Kathmandu</h3>
+                    <p className="package-description">
+                      Explore ancient temples, vibrant markets, and UNESCO World Heritage Sites in Nepal's capital.
+                    </p>
+                    <div className="package-features">
+                      <div className="package-feature">
+                        <Star className="feature-icon" />
+                        <span>4.8 Rating</span>
+                      </div>
+                      <div className="package-feature">
+                        <Users className="feature-icon" />
+                        <span>5,200+ Visitors</span>
+                      </div>
+                    </div>
+                    <div className="package-footer">
+                      <div className="package-price">
+                        <span className="price-label">Starting at</span>
+                        <span className="price-amount">NPR 25,000</span>
+                      </div>
+                      <button className="btn-book">Explore</button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Chitwan Card */}
+              <Link to="/destination/chitwan" className="package-card-link">
+                <div className="package-card">
+                  <div className="package-image-container">
+                    <img src="/images/chitwan.jpg" alt="Chitwan" className="package-image" />
+                    <div className="package-badge">Wildlife</div>
+                  </div>
+                  <div className="package-content">
+                    <h3 className="package-title">Chitwan</h3>
+                    <p className="package-description">
+                      Experience jungle safaris, spot rare wildlife, and enjoy elephant rides in Chitwan National Park.
+                    </p>
+                    <div className="package-features">
+                      <div className="package-feature">
+                        <Star className="feature-icon" />
+                        <span>4.9 Rating</span>
+                      </div>
+                      <div className="package-feature">
+                        <Users className="feature-icon" />
+                        <span>3,800+ Visitors</span>
+                      </div>
+                    </div>
+                    <div className="package-footer">
+                      <div className="package-price">
+                        <span className="price-label">Starting at</span>
+                        <span className="price-amount">NPR 35,000</span>
+                      </div>
+                      <button className="btn-book">Explore</button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Lumbini Card */}
+              <Link to="/destination/lumbini" className="package-card-link">
+                <div className="package-card">
+                  <div className="package-image-container">
+                    <img src="/images/lumbini.jpg" alt="Lumbini" className="package-image" />
+                    <div className="package-badge">Spiritual</div>
+                  </div>
+                  <div className="package-content">
+                    <h3 className="package-title">Lumbini</h3>
+                    <p className="package-description">
+                      Visit the birthplace of Lord Buddha and explore sacred gardens, monasteries, and monuments.
+                    </p>
+                    <div className="package-features">
+                      <div className="package-feature">
+                        <Star className="feature-icon" />
+                        <span>4.7 Rating</span>
+                      </div>
+                      <div className="package-feature">
+                        <Users className="feature-icon" />
+                        <span>4,100+ Visitors</span>
+                      </div>
+                    </div>
+                    <div className="package-footer">
+                      <div className="package-price">
+                        <span className="price-label">Starting at</span>
+                        <span className="price-amount">NPR 28,000</span>
+                      </div>
+                      <button className="btn-book">Explore</button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
