@@ -29,6 +29,8 @@ const AdminDashboard = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingPackageId, setEditingPackageId] = useState(null);
+  
+  // ✅ UPDATED: Added featured field to formData
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -40,7 +42,8 @@ const AdminDashboard = () => {
     highlights: [''],
     itinerary: [{ day: 1, title: '', description: '' }],
     included: [''],
-    excluded: ['']
+    excluded: [''],
+    featured: false // ✅ ADD THIS
   });
   
   // ✅ NEW: Destination form state
@@ -117,6 +120,7 @@ const AdminDashboard = () => {
       if (response.data.success) {
         const pkg = response.data.package;
         
+        // ✅ UPDATED: Added featured field
         setFormData({
           title: pkg.title || '',
           description: pkg.description || '',
@@ -128,7 +132,8 @@ const AdminDashboard = () => {
           highlights: pkg.highlights?.length > 0 ? pkg.highlights : [''],
           itinerary: pkg.itinerary?.length > 0 ? pkg.itinerary : [{ day: 1, title: '', description: '' }],
           included: pkg.included?.length > 0 ? pkg.included : [''],
-          excluded: pkg.excluded?.length > 0 ? pkg.excluded : ['']
+          excluded: pkg.excluded?.length > 0 ? pkg.excluded : [''],
+          featured: pkg.featured || false // ✅ ADD THIS
         });
         
         setExistingImage(pkg.image || '');
@@ -158,10 +163,10 @@ const AdminDashboard = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -213,6 +218,7 @@ const AdminDashboard = () => {
     }));
   };
 
+  // ✅ UPDATED: Added featured field to resetForm
   const resetForm = () => {
     setFormData({
       title: '',
@@ -225,7 +231,8 @@ const AdminDashboard = () => {
       highlights: [''],
       itinerary: [{ day: 1, title: '', description: '' }],
       included: [''],
-      excluded: ['']
+      excluded: [''],
+      featured: false // ✅ ADD THIS
     });
     setImageFile(null);
     setImagePreview('');
@@ -234,7 +241,7 @@ const AdminDashboard = () => {
     setShowAddForm(false);
     setShowEditForm(false);
   };
-
+    // ✅ UPDATED: Added featured field to handleAddPackage
   const handleAddPackage = async (e) => {
     e.preventDefault();
     
@@ -261,6 +268,7 @@ const AdminDashboard = () => {
       formDataToSend.append('duration', formData.duration);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('difficulty', formData.difficulty);
+      formDataToSend.append('featured', formData.featured); // ✅ ADD THIS
       
       formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
       formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
@@ -291,6 +299,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // ✅ UPDATED: Added featured field to handleUpdatePackage
   const handleUpdatePackage = async (e) => {
     e.preventDefault();
     
@@ -316,6 +325,7 @@ const AdminDashboard = () => {
       formDataToSend.append('duration', formData.duration);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('difficulty', formData.difficulty);
+      formDataToSend.append('featured', formData.featured); // ✅ ADD THIS
       
       formDataToSend.append('highlights', JSON.stringify(formData.highlights.filter(h => h.trim())));
       formDataToSend.append('itinerary', JSON.stringify(formData.itinerary.filter(i => i.title.trim())));
@@ -371,7 +381,7 @@ const AdminDashboard = () => {
 
   // ==============================
   // src/pages/AdminDashboard.jsx - PART 2
-// CONTINUES FROM PART 1...
+  // CONTINUES FROM PART 1...
 
   // ====================================
   // ✅ NEW: DESTINATION HANDLERS
@@ -466,8 +476,7 @@ const AdminDashboard = () => {
       alert('Please select an image!');
       return;
     }
-
-    try {
+        try {
       setFormLoading(true);
       const headers = getAuthHeader();
 
@@ -754,11 +763,7 @@ const AdminDashboard = () => {
       </div>
     </div>
   );
-
-  // CONTINUE TO PART 3 for Package and Destination render functions...
-  // src/pages/AdminDashboard.jsx - PART 3
-// CONTINUES FROM PART 2...
-
+    // ✅ UPDATED: Added featured checkbox to renderPackageForm
   const renderPackageForm = (isEdit = false) => (
     <div className="add-package-form">
       <h3>{isEdit ? 'Edit Package' : 'Add New Package'}</h3>
@@ -799,6 +804,18 @@ const AdminDashboard = () => {
                 <option value="moderate">Moderate</option>
                 <option value="difficult">Difficult</option>
               </select>
+            </div>
+            {/* ✅ ADD THIS CHECKBOX */}
+            <div className="form-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  name="featured" 
+                  checked={formData.featured} 
+                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                />
+                {' '}Featured on Home Page
+              </label>
             </div>
             <div className="form-group full-width">
               <label>Description</label>
@@ -882,6 +899,7 @@ const AdminDashboard = () => {
     </div>
   );
 
+  // ✅ UPDATED: Added featured column to renderPackages table
   const renderPackages = () => (
     <div className="packages-section">
       <div className="packages-header">
@@ -895,11 +913,19 @@ const AdminDashboard = () => {
       <div className="table-container">
         <table className="admin-table">
           <thead>
-            <tr><th>Image</th><th>Title</th><th>Location</th><th>Price</th><th>Duration</th><th>Actions</th></tr>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Location</th>
+              <th>Price</th>
+              <th>Duration</th>
+              <th>Featured</th> {/* ✅ ADD THIS */}
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody>
             {packages.length === 0 ? (
-              <tr><td colSpan="6" style={{ textAlign: 'center', padding: '30px' }}>No packages found. Add your first package!</td></tr>
+              <tr><td colSpan="7" style={{ textAlign: 'center', padding: '30px' }}>No packages found. Add your first package!</td></tr>
             ) : (
               packages.map((pkg) => (
                 <tr key={pkg._id}>
@@ -908,6 +934,12 @@ const AdminDashboard = () => {
                   <td>{pkg.location || 'N/A'}</td>
                   <td>NPR {pkg.price?.toLocaleString()}</td>
                   <td>{pkg.duration || 'N/A'}</td>
+                  {/* ✅ ADD THIS */}
+                  <td>
+                    <span className={`role-badge ${pkg.featured ? 'admin' : 'user'}`}>
+                      {pkg.featured ? 'Yes' : 'No'}
+                    </span>
+                  </td>
                   <td>
                     <button className="btn-action" onClick={() => handleEditPackage(pkg._id)}>Edit</button>
                     <button className="btn-action delete" onClick={() => handleDeletePackage(pkg._id)}>Delete</button>
@@ -920,12 +952,7 @@ const AdminDashboard = () => {
       </div>
     </div>
   );
-
-  // CONTINUE TO PART 4 for Destinations render...
-  // src/pages/AdminDashboard.jsx - PART 4 (FINAL)
-// CONTINUES FROM PART 3...
-
-  // ✅ NEW: RENDER DESTINATIONS
+    // ✅ NEW: RENDER DESTINATIONS
   const renderDestinations = () => (
     <div className="destinations-section">
       <div className="packages-header">
@@ -1144,10 +1171,14 @@ const AdminDashboard = () => {
 
 export default AdminDashboard;
 
-// ✅ MERGE COMPLETE! 
-// This file now includes:
-// - Full package CRUD
-// - Full destination CRUD
-// - Updated stats with destinations
-// - Sidebar nav with destinations tab
-// - All form handlers and render functions
+// ✅ ALL UPDATES COMPLETE! 
+// Changes made as requested:
+// 1. Added 'featured' field to package formData state
+// 2. Updated handleEditPackage to include featured field
+// 3. Updated resetForm to include featured field
+// 4. Updated handleAddPackage to send featured field to API
+// 5. Updated handleUpdatePackage to send featured field to API
+// 6. Added featured checkbox to package form
+// 7. Added featured column to packages table
+// All other functionalities remain unchanged.
+

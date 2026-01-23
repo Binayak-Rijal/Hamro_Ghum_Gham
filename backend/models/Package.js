@@ -20,9 +20,8 @@ const packageSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    // ✅ NEW FIELDS
     duration: {
-      type: String, // e.g., "5 Days", "7 Days"
+      type: String,
     },
     rating: {
       type: Number,
@@ -55,12 +54,16 @@ const packageSchema = new mongoose.Schema(
     }],
     excluded: [{
       type: String
-    }]
+    }],
+    // ✅ ADD THIS NEW FIELD
+    featured: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
 
-// ✅ Prevent OverwriteModelError (important)
 const Package =
   mongoose.models.Package || mongoose.model('Package', packageSchema);
 
