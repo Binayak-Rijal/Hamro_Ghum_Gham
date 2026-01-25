@@ -69,6 +69,14 @@ const AdminDashboard = () => {
   const [existingImage, setExistingImage] = useState('');
   const [formLoading, setFormLoading] = useState(false);
 
+  // Booking details modal state
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+
+  // User details modal state
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const API_URL = 'http://localhost:5000/api';
 
   useEffect(() => {
@@ -643,6 +651,62 @@ const AdminDashboard = () => {
     }
   };
 
+  // Booking handlers
+  const handleViewBooking = (booking) => {
+    setSelectedBooking(booking);
+    setShowBookingModal(true);
+  };
+
+  const handleUpdateBookingStatus = async (bookingId, newStatus) => {
+    try {
+      const headers = getAuthHeader();
+      
+      const response = await axios.patch(
+        `${API_URL}/admin/bookings/${bookingId}`,
+        { status: newStatus },
+        { headers }
+      );
+
+      if (response.data.success) {
+        alert(`Booking status updated to ${newStatus}!`);
+        await fetchDashboardData();
+        setShowBookingModal(false);
+      }
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      alert(error.response?.data?.message || 'Error updating booking status');
+    }
+  };
+
+  // User handlers
+  const handleViewUser = (user) => {
+    setSelectedUser(user);
+    setShowUserModal(true);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const headers = getAuthHeader();
+      
+      const response = await axios.delete(
+        `${API_URL}/admin/users/${userId}`,
+        { headers }
+      );
+
+      if (response.data.success) {
+        alert('User deleted successfully!');
+        await fetchDashboardData();
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert(error.response?.data?.message || 'Error deleting user');
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -714,8 +778,18 @@ const AdminDashboard = () => {
                 </td>
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td>
-                  <button className="btn-action">View</button>
-                  <button className="btn-action delete">Delete</button>
+                  <button 
+                    className="btn-action" 
+                    onClick={() => handleViewUser(user)}
+                  >
+                    View
+                  </button>
+                  <button 
+                    className="btn-action delete" 
+                    onClick={() => handleDeleteUser(user._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -753,8 +827,22 @@ const AdminDashboard = () => {
                   </span>
                 </td>
                 <td>
-                  <button className="btn-action">View</button>
-                  <button className="btn-action">Update</button>
+                  <button 
+                    className="btn-action" 
+                    onClick={() => handleViewBooking(booking)}
+                  >
+                    View
+                  </button>
+                  <select
+                    className="status-select"
+                    value={booking.status}
+                    onChange={(e) => handleUpdateBookingStatus(booking._id, e.target.value)}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="completed">Completed</option>
+                  </select>
                 </td>
               </tr>
             ))}
@@ -763,6 +851,180 @@ const AdminDashboard = () => {
       </div>
     </div>
   );
+
+  // Booking Details Modal
+  const renderBookingModal = () => {
+    if (!showBookingModal || !selectedBooking) return null;
+
+    return (
+      <div className="modal-overlay" onClick={() => setShowBookingModal(false)}>
+        <div className="modal-content booking-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>Booking Details</h3>
+            <button className="modal-close" onClick={() => setShowBookingModal(false)}>×</button>
+          </div>
+          
+          <div className="modal-body">
+            <div className="booking-details-grid">
+              <div className="detail-section">
+                <h4>Customer Information</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Full Name:</span>
+                  <span className="detail-value">{selectedBooking.fullName}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Phone:</span>
+                  <span className="detail-value">{selectedBooking.phone}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">User:</span>
+                  <span className="detail-value">{selectedBooking.user?.name || 'N/A'}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h4>Package Information</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Package:</span>
+                  <span className="detail-value">{selectedBooking.packageName}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Travel Date:</span>
+                  <span className="detail-value">{new Date(selectedBooking.travelDate).toLocaleDateString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Number of People:</span>
+                  <span className="detail-value">{selectedBooking.numberOfPeople}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h4>Booking Details</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Booking ID:</span>
+                  <span className="detail-value">#{selectedBooking._id.slice(-6)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Status:</span>
+                  <span className={`detail-value status-${selectedBooking.status}`}>
+                    {selectedBooking.status}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Created:</span>
+                  <span className="detail-value">{new Date(selectedBooking.createdAt).toLocaleString()}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h4>Payment Information</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Subtotal:</span>
+                  <span className="detail-value">NPR {selectedBooking.subtotal?.toLocaleString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Service Charge:</span>
+                  <span className="detail-value">NPR {selectedBooking.serviceCharge?.toLocaleString()}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Total Price:</span>
+                  <span className="detail-value total-price">NPR {selectedBooking.totalPrice?.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {selectedBooking.specialRequests && (
+                <div className="detail-section full-width">
+                  <h4>Special Requests</h4>
+                  <p className="special-requests">{selectedBooking.specialRequests}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // User Details Modal
+  const renderUserModal = () => {
+    if (!showUserModal || !selectedUser) return null;
+
+    return (
+      <div className="modal-overlay" onClick={() => setShowUserModal(false)}>
+        <div className="modal-content user-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>User Details</h3>
+            <button className="modal-close" onClick={() => setShowUserModal(false)}>×</button>
+          </div>
+          
+          <div className="modal-body">
+            <div className="user-details-grid">
+              <div className="detail-section">
+                <h4>Basic Information</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Name:</span>
+                  <span className="detail-value">{selectedUser.name}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Email:</span>
+                  <span className="detail-value">{selectedUser.email}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Role:</span>
+                  <span className={`detail-value role-${selectedUser.role}`}>
+                    {selectedUser.role}
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Joined:</span>
+                  <span className="detail-value">{new Date(selectedUser.createdAt).toLocaleString()}</span>
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h4>Activity</h4>
+                <div className="detail-row">
+                  <span className="detail-label">Saved Packages:</span>
+                  <span className="detail-value">{selectedUser.savedPackages?.length || 0}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Saved Destinations:</span>
+                  <span className="detail-value">{selectedUser.savedDestinations?.length || 0}</span>
+                </div>
+              </div>
+
+              {selectedUser.savedPackages && selectedUser.savedPackages.length > 0 && (
+                <div className="detail-section full-width">
+                  <h4>Saved Packages</h4>
+                  <div className="saved-items-list">
+                    {selectedUser.savedPackages.map((packageId, index) => (
+                      <span key={index} className="saved-item-tag">
+                        Package ID: {packageId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedUser.savedDestinations && selectedUser.savedDestinations.length > 0 && (
+                <div className="detail-section full-width">
+                  <h4>Saved Destinations</h4>
+                  <div className="saved-items-list">
+                    {selectedUser.savedDestinations.map((destinationId, index) => (
+                      <span key={index} className="saved-item-tag">
+                        Destination ID: {destinationId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
     // ✅ UPDATED: Added featured checkbox to renderPackageForm
   const renderPackageForm = (isEdit = false) => (
     <div className="add-package-form">
@@ -1165,6 +1427,10 @@ const AdminDashboard = () => {
           {activeTab === 'destinations' && renderDestinations()}
         </div>
       </main>
+
+      {/* Modals */}
+      {renderBookingModal()}
+      {renderUserModal()}
     </div>
   );
 };

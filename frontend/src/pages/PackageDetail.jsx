@@ -250,45 +250,22 @@ export default function PackageDetail() {
       return;
     }
 
-    try {
-      const response = await axios.post(
-        `${API_URL}/bookings`,
-        {
-          packageId: packageInfo._id,
-          packageName: packageInfo.title,
-          fullName: bookingData.fullName,
-          phone: bookingData.phone.replace(/\D/g, ''),
-          travelDate: bookingData.date,
-          numberOfPeople: bookingData.guests,
-          subtotal,
-          serviceCharge,
-          totalPrice: total
-        },
-        { headers: getAuthHeader() }
-      );
-
-      if (response.data.success) {
-        setConfirmedBooking({
-          packageName: packageInfo.title,
-          date: bookingData.date,
-          guests: bookingData.guests,
-          duration: packageInfo.duration,
-          phone: bookingData.phone,
-          total: total
-        });
-        setShowConfirmation(true);
-        
-        setBookingData({
-          fullName: '',
-          phone: '',
-          date: '',
-          guests: 1
-        });
-      }
-    } catch (error) {
-      console.error('Booking error:', error);
-      toast.error(error.response?.data?.message || 'Booking failed. Please try again.');
-    }
+    // Store booking data for the complete booking page
+    const bookingInfo = {
+      packageId: packageInfo._id,
+      packageName: packageInfo.title,
+      fullName: bookingData.fullName,
+      phone: bookingData.phone.replace(/\D/g, ''),
+      travelDate: bookingData.date,
+      numberOfPeople: bookingData.guests,
+      subtotal,
+      serviceCharge,
+      totalPrice: total
+    };
+    localStorage.setItem('pendingBooking', JSON.stringify(bookingInfo));
+    
+    // Navigate to complete booking page
+    navigate('/complete-booking');
   };
 
   return (

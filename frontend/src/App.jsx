@@ -101,6 +101,7 @@ import SavedPackages from './components/SavedPackages';
 import DestinationDetail from './pages/DestinationDetail';
 import ViewBooking from './components/ViewBooking';
 import AdminDashboard from './pages/AdminDashboard';
+import CompleteBooking from './pages/CompleteBooking';
 
 function App() {
   return (
@@ -137,6 +138,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SavedPackages />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/complete-booking" 
+            element={
+              <ProtectedRoute>
+                <CompleteBooking />
               </ProtectedRoute>
             } 
           />
