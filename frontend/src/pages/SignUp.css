@@ -1,6 +1,4 @@
-/* ========================================
-   SPLIT SCREEN SIGNUP DESIGN - FIXED
-   ======================================== */
+
 
 /* REMOVED GLOBAL STYLES TO FIX SCROLLING ON OTHER PAGES */
 
@@ -18,9 +16,7 @@
   width: 100%;
 }
 
-/* ========================================
-   LEFT SIDE - HERO SECTION
-   ======================================== */
+
 
 .signup-left {
   flex: 0 0 60%;
