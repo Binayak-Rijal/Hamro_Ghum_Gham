@@ -1,5 +1,6 @@
 import './WelcomePage.css';
 import { useNavigate } from 'react-router-dom';
+import ScrollToTop from '../components/ScrollToTop';
 
 function WelcomePage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function WelcomePage() {
 
   return (
     <div className="container">
+      <ScrollToTop />
       <div className="left-panel">
         <div className="logo">
           <div className="logo-circle">
@@ -46,7 +48,7 @@ function WelcomePage() {
 
       <div className="right-panel">
         <img 
-          src="/images/Welcome.jpg" 
+          src="/images/Welcome2.jpg" 
           alt="Beautiful Nepal Landscape" 
           className="welcome-image" 
         />
