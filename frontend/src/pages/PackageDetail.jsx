@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Clock, Star, Bookmark } from 'lucide-react';
+import { MapPin, Calendar, Users, Clock, Star, Bookmark, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import BookingConfirmation from '../components/BookingConfirmation';
+import RatePackages from '../components/RatePackages';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './PackageDetail.css';
 
@@ -17,6 +19,7 @@ const packagesData = {
     price: 1299,
     duration: '14 Days',
     image: '/images/everest.jpg',
+    videoUrl: 'https://www.youtube.com/embed/YiU91EX9cJo', // Example video URL
     rating: 4.9,
     reviews: 342,
     description:
@@ -66,6 +69,7 @@ const packagesData = {
     price: 899,
     duration: '12 Days',
     image: '/images/annapurna.jpg',
+    videoUrl: 'https://www.youtube.com/embed/rsmO8A3P3VQ', // Example video URL
     rating: 4.8,
     reviews: 278,
     description:
@@ -149,6 +153,7 @@ const packagesData = {
     image: '/images/pokhara.jpg',
     rating: 4.8,
     reviews: 156,
+    videoEmbed: 'https://www.youtube.com/embed/JdntRicyXhM',
     description: 'Experience the serene beauty of Pokhara, the gateway to the Annapurna region. Enjoy stunning views of Phewa Lake, witness magical sunrises from Sarangkot, and explore the vibrant lakeside city.',
     highlights: [
       'Sunrise view from Sarangkot',
@@ -230,6 +235,7 @@ const packagesData = {
     price: 799,
     duration: '10 Days',
     image: '/images/Mustang.jpg',
+    videoUrl: 'https://www.youtube.com/embed/4N_BxAJxZvw', // Example video URL
     rating: 5.0,
     reviews: 89,
     description: 'Explore the forbidden kingdom of Upper Mustang, a restricted area that offers a glimpse into ancient Tibetan culture. Discover dramatic desert landscapes, ancient caves, and centuries-old monasteries.',
@@ -287,6 +293,8 @@ export default function PackageDetail() {
   // UPDATED: Save state
   const [isSaved, setIsSaved] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -315,7 +323,7 @@ export default function PackageDetail() {
     try {
       setIsCheckingStatus(true);
       const response = await axios.get(
-        `http://localhost:5000/api/saved/check/${packageId}/package`,
+        `http://localhost:3000/api/saved/check/${packageId}/package`,
         { headers: getAuthHeader() }
       );
       
@@ -348,7 +356,7 @@ export default function PackageDetail() {
       if (isSaved) {
         // Remove from saved
         const response = await axios.delete(
-          `http://localhost:5000/api/saved/${packageId}/package`,
+          `http://localhost:3000/api/saved/${packageId}/package`,
           { 
             headers: {
               'Authorization': `Bearer ${token}`
@@ -366,7 +374,7 @@ export default function PackageDetail() {
       } else {
         // Add to saved
         const response = await axios.post(
-          'http://localhost:5000/api/saved',
+          'http://localhost:3000/api/saved',
           {
             itemId: packageInfo.id,
             itemType: 'package',
@@ -490,7 +498,7 @@ export default function PackageDetail() {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/bookings',
+        'http://localhost:3000/api/bookings',
         {
           packageId: packageInfo.id,
           packageName: packageInfo.name,
@@ -533,6 +541,7 @@ export default function PackageDetail() {
 
   return (
     <div className="package-detail-page">
+      <ScrollToTop />
       {/* Shared Navigation */}
       <Navbar />
 
@@ -545,11 +554,15 @@ export default function PackageDetail() {
               {/* Hero Image */}
               <div className="package-hero-image">
                 <img src={packageInfo.image} alt={packageInfo.name} />
-                <div className="play-button">
+                <button
+                  className="play-button"
+                  onClick={() => setShowVideoModal(true)}
+                  title="Play video"
+                >
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                </div>
+                </button>
                 {/* Save/Bookmark Button */}
                 <button 
                   className={`save-button ${isSaved ? 'saved' : ''}`}
@@ -573,6 +586,13 @@ export default function PackageDetail() {
                     <span>{packageInfo.rating}</span>
                     <span className="review-count">({packageInfo.reviews} reviews)</span>
                   </div>
+                  <button
+                    onClick={() => setShowRatingModal(true)}
+                    className="rate-button"
+                    title="Rate this package"
+                  >
+                    ⭐ Rate Package
+                  </button>
                   <div className="package-location">
                     <MapPin className="meta-icon" />
                     <span>{packageInfo.location}</span>
@@ -722,12 +742,49 @@ export default function PackageDetail() {
         </div>
       </main>
 
+      {/* Video Modal */}
+      {showVideoModal && (
+        <div className="video-modal-overlay" onClick={() => setShowVideoModal(false)}>
+          <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="video-modal-close"
+              onClick={() => setShowVideoModal(false)}
+              title="Close video"
+            >
+              <X size={24} />
+            </button>
+            <div className="video-container">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`${packageInfo.videoUrl}?autoplay=1`}
+                title={packageInfo.name}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Booking Confirmation Popup */}
       {showConfirmation && confirmedBooking && (
         <BookingConfirmation
           isOpen={showConfirmation}
           onClose={() => setShowConfirmation(false)}
           bookingDetails={confirmedBooking}
+        />
+      )}
+
+      {/* Rating Modal */}
+      {showRatingModal && (
+        <RatePackages
+          packageId={packageInfo.id}
+          onClose={() => setShowRatingModal(false)}
+          onSuccess={() => {
+            toast.success('Thank you for your rating!');
+          }}
         />
       )}
     </div>

@@ -398,6 +398,25 @@ body::after {
 
 /* =========================
    TOURS GRID
+
+.active-filters {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  background: rgba(249, 115, 22, 0.08);
+  color: var(--orange-dark);
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* =========================
+   TOURS GRID
 ========================= */
 .tours-header {
   margin-bottom: 2rem;

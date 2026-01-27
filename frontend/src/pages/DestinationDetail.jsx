@@ -3,7 +3,9 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, Users, Star, Bookmark, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios'; 
+import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import './DestinationDetail.css';
 import BookingConfirmation from '../components/BookingConfirmation';
 
@@ -255,7 +257,7 @@ export default function DestinationDetail() {
     try {
       setIsCheckingStatus(true);
       const response = await axios.get(
-        `http://localhost:5000/api/saved/check/${destinationId}/destination`,
+        `http://localhost:3000/api/saved/check/${destinationId}/destination`,
         { headers: getAuthHeader() }
       );
       
@@ -272,7 +274,7 @@ export default function DestinationDetail() {
   // ✅ UPDATED: Toggle save/unsave using database
 const handleSaveToggle = async () => {
   if (!isAuthenticated()) {
-    alert('Please login to save destinations');
+    toast.info('Please login to save destinations');
     navigate('/login');
     return;
   }
@@ -280,7 +282,7 @@ const handleSaveToggle = async () => {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('No authentication token found. Please login again.');
+      toast.error('No authentication token found. Please login again.');
       navigate('/login');
       return;
     }
@@ -288,7 +290,7 @@ const handleSaveToggle = async () => {
     if (isSaved) {
       // Remove destination from saved
       const response = await axios.delete(
-        `http://localhost:5000/api/saved/${destinationId}/destination`,
+        `http://localhost:3000/api/saved/${destinationId}/destination`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -298,7 +300,7 @@ const handleSaveToggle = async () => {
 
       if (response.data.success) {
         setIsSaved(false);
-        alert('Destination removed from saved items');
+        toast.success('Destination removed from saved items');
 
         // 🔄 Update navbar
         window.dispatchEvent(new Event('savedItemsChanged'));
@@ -306,7 +308,7 @@ const handleSaveToggle = async () => {
     } else {
       // Add destination to saved
       const response = await axios.post(
-        'http://localhost:5000/api/saved',
+        'http://localhost:3000/api/saved',
         {
           itemId: destinationInfo.id,
           itemType: 'destination',
@@ -326,7 +328,7 @@ const handleSaveToggle = async () => {
 
       if (response.data.success) {
         setIsSaved(true);
-        alert('Destination saved successfully!');
+        toast.success('Destination saved successfully!');
 
         // 🔄 Update navbar
         window.dispatchEvent(new Event('savedItemsChanged'));
@@ -336,12 +338,12 @@ const handleSaveToggle = async () => {
     console.error('Save toggle error:', error);
 
     if (error.response?.status === 401) {
-      alert('Your session has expired. Please login again.');
+      toast.error('Your session has expired. Please login again.');
       navigate('/login');
     } else if (error.response?.status === 400) {
-      alert(error.response.data.message || 'Item already saved');
+      toast.error(error.response.data.message || 'Item already saved');
     } else {
-      alert('Failed to update saved status. Please check your connection and try again.');
+      toast.error('Failed to update saved status. Please check your connection and try again.');
     }
   }
 };
@@ -384,7 +386,7 @@ const handleSaveToggle = async () => {
     e.preventDefault();
     
     if (!isAuthenticated()) {
-      alert('Please login to send inquiry');
+      toast.info('Please login to send inquiry');
       navigate('/login');
       return;
     }
@@ -414,6 +416,7 @@ const handleSaveToggle = async () => {
 
   return (
     <div className="destination-detail-page">
+      <ScrollToTop />
       {/* Shared Navigation */}
       <Navbar />
 
