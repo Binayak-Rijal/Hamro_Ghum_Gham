@@ -1437,8 +1437,7 @@ const AdminDashboard = () => {
 
 export default AdminDashboard;
 
-// ✅ ALL UPDATES COMPLETE! 
-// Changes made as requested:
+// Changes made :
 // 1. Added 'featured' field to package formData state
 // 2. Updated handleEditPackage to include featured field
 // 3. Updated resetForm to include featured field
@@ -1447,3 +1446,4 @@ export default AdminDashboard;
 // 6. Added featured checkbox to package form
 // 7. Added featured column to packages table
 // All other functionalities remain unchanged.
+
