@@ -45,6 +45,7 @@ const auth = async (req, res, next) => {
   }
 };
 
+
 // Admin-only middleware (use after auth middleware)
 export const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
@@ -60,4 +61,5 @@ export const adminOnly = (req, res, next) => {
 };
 
 // Export auth as default
+
 export default auth;

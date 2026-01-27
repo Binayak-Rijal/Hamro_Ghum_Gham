@@ -77,7 +77,7 @@ const AdminDashboard = () => {
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'http://localhost:3000/api';
 
   useEffect(() => {
     fetchDashboardData();
@@ -1437,8 +1437,7 @@ const AdminDashboard = () => {
 
 export default AdminDashboard;
 
-// ✅ ALL UPDATES COMPLETE! 
-// Changes made as requested:
+// Changes made :
 // 1. Added 'featured' field to package formData state
 // 2. Updated handleEditPackage to include featured field
 // 3. Updated resetForm to include featured field

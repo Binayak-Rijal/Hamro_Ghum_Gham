@@ -3,15 +3,20 @@
 // Location: src/components/BookingConfirmation.jsx
 // ============================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle, X, Calendar, Users, MapPin, Clock, Mail, Phone } from 'lucide-react';
 import './BookingConfirmation.css';
 
 export default function BookingConfirmation({ isOpen, onClose, bookingDetails }) {
-  if (!isOpen) return null;
+  const [bookingReference, setBookingReference] = useState('');
 
-  // Generate random booking reference
-  const bookingReference = Math.random().toString(36).substr(2, 9).toUpperCase();
+  useEffect(() => {
+    if (isOpen) {
+      setBookingReference(Math.random().toString(36).substr(2, 9).toUpperCase());
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="booking-popup-overlay" onClick={onClose}>

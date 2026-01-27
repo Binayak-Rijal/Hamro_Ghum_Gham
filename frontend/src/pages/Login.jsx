@@ -94,12 +94,17 @@ const Login = () => {
       const result = await login(email, password);
 
       if (result?.success) {
+        console.log("Login result user:", result.user); // Debug log
+        console.log("User role:", result.user?.role); // Debug log
+        console.log("Is admin?", result.user?.role === 'admin'); // Debug log
         toast.success("Login successful! Welcome back.");
-        
+
         // Redirect based on user role
         if (result.user?.role === 'admin') {
+          console.log("Navigating to admin dashboard"); // Debug log
           navigate("/admin/dashboard");
         } else {
+          console.log("Navigating to home"); // Debug log
           navigate("/home");
         }
       } else {

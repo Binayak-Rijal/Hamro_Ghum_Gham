@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import "./ForgotPassword.css";
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:3000/api';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

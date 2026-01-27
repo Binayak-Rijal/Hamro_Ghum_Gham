@@ -3,9 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Star, Bookmark, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
 import axios from 'axios'; 
+import { toast } from 'react-toastify';
+
+
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import './DestinationDetail.css';
 import BookingConfirmation from '../components/BookingConfirmation';
 
@@ -74,7 +77,8 @@ export default function DestinationDetail() {
     try {
       setIsCheckingStatus(true);
       const response = await axios.get(
-        `${API_URL}/saved/check/${destinationId}/destination`,
+        `http://localhost:3000/api/saved/check/${destinationId}/destination`,
+
         { headers: getAuthHeader() }
       );
       
@@ -88,13 +92,65 @@ export default function DestinationDetail() {
     }
   };
 
-  const handleSaveToggle = async () => {
-    if (!isAuthenticated()) {
-      toast.error('Please login to save destinations');
+  // ✅ UPDATED: Toggle save/unsave using database
+const handleSaveToggle = async () => {
+  if (!isAuthenticated()) {
+    toast.info('Please login to save destinations');
+    navigate('/login');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('No authentication token found. Please login again.');
+
       navigate('/login');
       return;
     }
 
+    if (isSaved) {
+      // Remove destination from saved
+      const response = await axios.delete(
+        `http://localhost:3000/api/saved/${destinationId}/destination`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setIsSaved(false);
+        toast.success('Destination removed from saved items');
+
+        // 🔄 Update navbar
+        window.dispatchEvent(new Event('savedItemsChanged'));
+      }
+    } else {
+      // Add destination to saved
+      const response = await axios.post(
+        'http://localhost:3000/api/saved',
+        {
+          itemId: destinationInfo.id,
+          itemType: 'destination',
+          name: destinationInfo.name,
+          location: destinationInfo.location,
+          price: destinationInfo.price,
+          image: destinationInfo.image,
+          rating: destinationInfo.rating
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setIsSaved(true);
+        toast.success('Destination saved successfully!');
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -154,6 +210,14 @@ export default function DestinationDetail() {
     }
   };
 
+    if (error.response?.status === 401) {
+      toast.error('Your session has expired. Please login again.');
+      navigate('/login');
+    } else if (error.response?.status === 400) {
+      toast.error(error.response.data.message || 'Item already saved');
+    } else {
+      toast.error('Failed to update saved status. Please check your connection and try again.');
+    }
   // Loading state
   if (loading) {
     return (
@@ -212,7 +276,8 @@ export default function DestinationDetail() {
     e.preventDefault();
     
     if (!isAuthenticated()) {
-      toast.error('Please login to send inquiry');
+      toast.info('Please login to send inquiry');
+
       navigate('/login');
       return;
     }
@@ -241,6 +306,8 @@ export default function DestinationDetail() {
 
   return (
     <div className="destination-detail-page">
+      <ScrollToTop />
+      {/* Shared Navigation */}
       <Navbar />
 
       <main className="destination-detail-main">

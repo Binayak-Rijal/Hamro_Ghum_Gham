@@ -4,16 +4,17 @@
 // frontend/src/pages/PackageDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Clock, Star, Bookmark } from 'lucide-react';
+import { MapPin, Calendar, Users, Clock, Star, Bookmark, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import BookingConfirmation from '../components/BookingConfirmation';
-import RatePackages from '../components/RatePackages'; // ✅ NEW
+import RatePackages from '../components/RatePackages';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './PackageDetail.css';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:3000/api';
 
 // Helper function for auth headers
 const getAuthHeader = () => {
@@ -33,6 +34,8 @@ export default function PackageDetail() {
   
   const [isSaved, setIsSaved] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -97,7 +100,7 @@ export default function PackageDetail() {
     try {
       setIsCheckingStatus(true);
       const response = await axios.get(
-        `${API_URL}/saved/check/${packageId}/package`,
+        `http://localhost:3000/api/saved/check/${packageId}/package`,
         { headers: getAuthHeader() }
       );
       
@@ -111,6 +114,7 @@ export default function PackageDetail() {
     }
   };
 
+  // UPDATED: Toggle save/unsave using database WITH TOASTIFY
   const handleSaveToggle = async () => {
     if (!isAuthenticated()) {
       toast.error('Please login to save packages');
@@ -128,8 +132,12 @@ export default function PackageDetail() {
 
       if (isSaved) {
         const response = await axios.delete(
-          `${API_URL}/saved/${packageId}/package`,
-          { headers: { 'Authorization': `Bearer ${token}` } }
+          `http://localhost:3000/api/saved/${packageId}/package`,
+          { 
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
         );
 
         if (response.data.success) {
@@ -139,7 +147,7 @@ export default function PackageDetail() {
         }
       } else {
         const response = await axios.post(
-          `${API_URL}/saved`,
+          'http://localhost:3000/api/saved',
           {
             itemId: packageInfo._id,
             itemType: 'package',
@@ -241,6 +249,7 @@ export default function PackageDetail() {
     }
   };
 
+  //  FIXED: Improved validation function
   const validateForm = () => {
     const newErrors = {};
     
@@ -278,6 +287,7 @@ export default function PackageDetail() {
     return Object.keys(newErrors).length === 0;
   };
 
+  //  FIXED: Handle booking with correct field names WITH TOASTIFY
   const handleBookNow = async (e) => {
     e.preventDefault();
     
@@ -291,26 +301,53 @@ export default function PackageDetail() {
       return;
     }
 
-    // Store booking data for the complete booking page
-    const bookingInfo = {
-      packageId: packageInfo._id,
-      packageName: packageInfo.title,
-      fullName: bookingData.fullName,
-      phone: bookingData.phone.replace(/\D/g, ''),
-      travelDate: bookingData.date,
-      numberOfPeople: bookingData.guests,
-      subtotal,
-      serviceCharge,
-      totalPrice: total
-    };
-    localStorage.setItem('pendingBooking', JSON.stringify(bookingInfo));
-    
-    // Navigate to complete booking page
-    navigate('/complete-booking');
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/api/bookings',
+        {
+          packageId: packageInfo.id,
+          packageName: packageInfo.name,
+          fullName: bookingData.fullName,
+          phone: bookingData.phone.replace(/\D/g, ''), // Clean phone number
+          travelDate: bookingData.date, // Changed from 'date' to 'travelDate'
+          numberOfPeople: bookingData.guests, // Changed from 'guests' to 'numberOfPeople'
+          subtotal,
+          serviceCharge,
+          totalPrice: total
+        },
+        { headers: getAuthHeader() }
+      );
+
+      if (response.data.success) {
+        //  Show popup instead of toast
+        setConfirmedBooking({
+          packageName: packageInfo.name,
+          date: bookingData.date,
+          guests: bookingData.guests,
+          duration: packageInfo.duration,
+          phone: bookingData.phone,
+          total: total
+        });
+        setShowConfirmation(true);
+        
+        // Reset form
+        setBookingData({
+          fullName: '',
+          phone: '',
+          date: '',
+          guests: 1
+        });
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(error.response?.data?.message || 'Booking failed. Please try again.');
+    }
   };
 
   return (
     <div className="package-detail-page">
+      <ScrollToTop />
+      {/* Shared Navigation */}
       <Navbar />
 
       <main className="package-detail-main">
@@ -320,12 +357,17 @@ export default function PackageDetail() {
             <div className="package-info">
               {/* Hero Image */}
               <div className="package-hero-image">
-                <img src={packageInfo.image || '/images/default.jpg'} alt={packageInfo.title} />
-                <div className="play-button">
+                <img src={packageInfo.image} alt={packageInfo.name} />
+                <button
+                  className="play-button"
+                  onClick={() => setShowVideoModal(true)}
+                  title="Play video"
+                >
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                </div>
+                </button>
+                {/* Save/Bookmark Button */}
                 <button 
                   className={`save-button ${isSaved ? 'saved' : ''}`}
                   onClick={handleSaveToggle}
@@ -348,6 +390,13 @@ export default function PackageDetail() {
                     <span>{packageInfo.rating || 4.5}</span>
                     <span className="review-count">({packageInfo.reviews || 0} reviews)</span>
                   </div>
+                  <button
+                    onClick={() => setShowRatingModal(true)}
+                    className="rate-button"
+                    title="Rate this package"
+                  >
+                    ⭐ Rate Package
+                  </button>
                   <div className="package-location">
                     <MapPin className="meta-icon" />
                     <span>{packageInfo.location}</span>
@@ -519,6 +568,33 @@ export default function PackageDetail() {
         </div>
       </main>
 
+      {/* Video Modal */}
+      {showVideoModal && (
+        <div className="video-modal-overlay" onClick={() => setShowVideoModal(false)}>
+          <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="video-modal-close"
+              onClick={() => setShowVideoModal(false)}
+              title="Close video"
+            >
+              <X size={24} />
+            </button>
+            <div className="video-container">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`${packageInfo.videoUrl}?autoplay=1`}
+                title={packageInfo.name}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking Confirmation Popup */}
       {showConfirmation && confirmedBooking && (
         <BookingConfirmation
           isOpen={showConfirmation}

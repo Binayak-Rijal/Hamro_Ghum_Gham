@@ -5,12 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Navbar.css';
 
-// Helper function for auth headers
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
@@ -18,7 +12,7 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, getAuthHeader } = useAuth();
   const navigate = useNavigate();
 
   // Handle scroll effect
@@ -33,13 +27,24 @@ export default function Navbar() {
 
   // Fetch saved count and bookings count from database
   useEffect(() => {
+    console.log('🔄 Navbar useEffect triggered');
+    console.log('🔐 isAuthenticated():', isAuthenticated());
+    console.log('👤 User:', user);
+    console.log('🔑 getAuthHeader():', getAuthHeader());
+    
     if (isAuthenticated()) {
+      console.log('✅ User authenticated, fetching counts...');
       fetchSavedCount();
       fetchBookingsCount();
+    } else {
+      console.log('⛔ User not authenticated, resetting counts');
+      setSavedCount(0);
+      setBookingsCount(0);
     }
     
     // Listen for save/unsave events
     const handleSavedItemsChange = () => {
+      console.log('📢 savedItemsChanged event received');
       if (isAuthenticated()) {
         fetchSavedCount();
       }
@@ -47,6 +52,7 @@ export default function Navbar() {
     
     // Listen for booking changes
     const handleBookingsChange = () => {
+      console.log('📢 bookingsChanged event received');
       if (isAuthenticated()) {
         fetchBookingsCount();
       }
@@ -59,21 +65,34 @@ export default function Navbar() {
       window.removeEventListener('savedItemsChanged', handleSavedItemsChange);
       window.removeEventListener('bookingsChanged', handleBookingsChange);
     };
-  }, [isAuthenticated()]);
+  }, [isAuthenticated, user]);
 
   // Fetch saved items count from database
   const fetchSavedCount = async () => {
     try {
+      const headers = getAuthHeader();
+      console.log('📤 fetchSavedCount - Headers:', headers);
+      
       const response = await axios.get(
-        'http://localhost:5000/api/saved/count',
-        { headers: getAuthHeader() }
+        'http://localhost:3000/api/saved/count',
+        { headers }
       );
+      
+      console.log('✅ Saved count response:', response.data);
       
       if (response.data.success) {
         setSavedCount(response.data.count);
       }
     } catch (error) {
-      console.error('Error fetching saved count:', error);
+      console.error('❌ Error fetching saved count:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          headers: error.config?.headers
+        }
+      });
       setSavedCount(0);
     }
   };
@@ -81,21 +100,35 @@ export default function Navbar() {
   // Fetch bookings count from database
   const fetchBookingsCount = async () => {
     try {
+      const headers = getAuthHeader();
+      console.log('📤 fetchBookingsCount - Headers:', headers);
+      
       const response = await axios.get(
-        'http://localhost:5000/api/bookings/count',
-        { headers: getAuthHeader() }
+        'http://localhost:3000/api/bookings/count',
+        { headers }
       );
+      
+      console.log('✅ Bookings count response:', response.data);
       
       if (response.data.success) {
         setBookingsCount(response.data.count);
       }
     } catch (error) {
-      console.error('Error fetching bookings count:', error);
+      console.error('❌ Error fetching bookings count:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          headers: error.config?.headers
+        }
+      });
       setBookingsCount(0);
     }
   };
 
   const handleLogout = () => {
+    console.log('🚪 Logging out...');
     logout();
     setSavedCount(0);
     setBookingsCount(0);
@@ -104,6 +137,7 @@ export default function Navbar() {
   };
 
   const handleProfileClick = () => {
+    console.log('👤 Profile dropdown toggled:', !showDropdown);
     setShowDropdown(!showDropdown);
   };
 

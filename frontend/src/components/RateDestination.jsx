@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import './RatePackages.css';
+import './RateDestination.css';
 
-const RatePackages = ({ packageId, onClose, onSuccess }) => {
+const RateDestination = ({ destinationId, onClose, onSuccess }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-
-  const API_URL = 'http://localhost:5000/api';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,15 +21,14 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ratings/package`, {
-      const response = await fetch(`${API_URL}/ratings/package`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ratings/destination`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          packageId,
+          destinationId,
           rating,
           comment,
         }),
@@ -52,9 +48,9 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="rate-packages-modal">
-      <div className="rate-packages-container">
-        <h2>Rate This Package</h2>
+    <div className="rate-destination-modal">
+      <div className="rate-destination-container">
+        <h2>Rate This Destination</h2>
         <form onSubmit={handleSubmit}>
           <div className="star-rating">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -78,7 +74,7 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
           </div>
 
           <textarea
-            placeholder="Share your experience (optional)"
+            placeholder="Tell us about your experience at this destination (optional)"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows="4"
@@ -103,5 +99,4 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
   );
 };
 
-export default RatePackages;
-export default RatePackages;
+export default RateDestination;

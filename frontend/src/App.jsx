@@ -11,11 +11,16 @@ import AdminRoute from './components/AdminRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
+
 import WelcomePage from './pages/WelcomePage';
 import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+
+
+
 import ForgotPassword from './pages/ForgotPassword'; // ✅ NEW
 import ResetPassword from './pages/ResetPassword'; // ✅ NEW
 import PackageDetail from './pages/PackageDetail';
@@ -26,6 +31,9 @@ import DestinationDetail from './pages/DestinationDetail';
 import ViewBooking from './components/ViewBooking';
 import AdminDashboard from './pages/AdminDashboard';
 import CompleteBooking from './pages/CompleteBooking';
+import EditProfile from './pages/EditProfile';
+import AboutUs from './pages/AboutUs';
+
 
 function App() {
   return (
@@ -40,7 +48,6 @@ function App() {
           pauseOnHover
           draggable
         />
-
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<WelcomePage />} />
@@ -48,6 +55,16 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/tours" element={<Tours />} />
+          <Route path="/destinations" element={<Destinations />} />
+          <Route path="/bookings" element={<ViewBooking />} />
+          <Route path="/about" element={<AboutUs />} />
+          
+          {/* Package and Destination routes (public but actions require login) */}
+
           <Route path="/forgot-password" element={<ForgotPassword />} /> {/* ✅ NEW */}
           <Route path="/reset-password" element={<ResetPassword />} /> {/* ✅ NEW */}
           <Route path="/tours" element={<Tours />} />
@@ -73,6 +90,16 @@ function App() {
               </ProtectedRoute>
             } 
           />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+          
 
           {/* Admin routes */}
           <Route 

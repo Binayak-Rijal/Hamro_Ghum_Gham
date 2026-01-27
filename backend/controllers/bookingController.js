@@ -145,7 +145,6 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    // Check if booking is already cancelled
     if (booking.status === 'cancelled') {
       return res.status(400).json({
         success: false,
