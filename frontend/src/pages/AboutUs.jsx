@@ -1,23 +1,36 @@
+// AboutUs component - Displays company information, mission, features, and social links
 import React from 'react';
+// Import various icons from lucide-react library for visual elements
 import { Mountain, Compass, Heart, Users, Shield, Star, Facebook, Instagram, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import './AboutUs.css';
-//smalll adjustments made in AboutUs.css for better styling
+//small adjustments made in AboutUs.css for better styling
+
+/**
+ * AboutUs Component
+ * Main page component that showcases the company's story, values, and services
+ * Includes hero section, features, statistics, and social media links
+ */
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation bar component */}
       <Navbar />
+      {/* Scroll to top button for better UX */}
       <ScrollToTop />
 
+      {/* Hero section with company name and tagline */}
       <div className="about-hero">
         <Mountain className="w-20 h-20 mx-auto mb-6" />
         <h1>Hamro Ghum Gham</h1>
         <p>Your trusted companion for unforgettable adventures across Nepal</p>
       </div>
 
+      {/* Main content container with max-width and centered alignment */}
       <div style={{ maxWidth: '75rem', margin: '0 auto', padding: '4rem 1.5rem' }}>
+        {/* Company story section - introduces the brand and mission */}
         <div className="story-card">
           <h2 className="section-title" style={{ textAlign: 'left', marginBottom: '2rem' }}>
             Our Story
@@ -33,12 +46,15 @@ const AboutUs = () => {
           </p>
         </div>
 
+        {/* Why Choose Us section - highlights key company strengths */}
         <h2 className="section-title">Why Choose Us</h2>
         <p className="section-subtitle">
           We combine local expertise with modern convenience to create the perfect travel experience
         </p>
 
+        {/* Grid of 6 feature boxes showcasing company benefits */}
         <div className="feature-grid">
+          {/* Feature 1: Local expertise */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Users className="w-10 h-10 text-white" />
@@ -49,6 +65,7 @@ const AboutUs = () => {
             </p>
           </div>
 
+          {/* Feature 2: Personalized service */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Heart className="w-10 h-10 text-white" />
@@ -59,6 +76,7 @@ const AboutUs = () => {
             </p>
           </div>
 
+          {/* Feature 3: Safety and security */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Shield className="w-10 h-10 text-white" />
@@ -69,6 +87,7 @@ const AboutUs = () => {
             </p>
           </div>
 
+          {/* Feature 4: Quality experiences */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Star className="w-10 h-10 text-white" />
@@ -79,6 +98,7 @@ const AboutUs = () => {
             </p>
           </div>
 
+          {/* Feature 5: Unique destinations */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Compass className="w-10 h-10 text-white" />
@@ -89,6 +109,7 @@ const AboutUs = () => {
             </p>
           </div>
 
+          {/* Feature 6: Diverse adventures */}
           <div className="feature-box">
             <div className="feature-icon-wrapper">
               <Mountain className="w-10 h-10 text-white" />
@@ -100,10 +121,12 @@ const AboutUs = () => {
           </div>
         </div>
 
+        {/* Statistics section - displays key metrics and achievements */}
         <div className="stats-section">
           <h2 style={{ fontSize: '2.5rem', fontWeight: '800', textAlign: 'center', marginBottom: '1rem' }}>
             Our Journey in Numbers
           </h2>
+          {/* Grid displaying 4 key statistics */}
           <div className="stats-grid">
             <div className="stat-item">
               <div className="stat-number">1000+</div>
@@ -124,6 +147,7 @@ const AboutUs = () => {
           </div>
         </div>
 
+        {/* Mission statement box - company's commitment to customers */}
         <div className="mission-box">
           <div className="mission-title">Our Promise to You</div>
           <p className="mission-text">
@@ -131,12 +155,15 @@ const AboutUs = () => {
           </p>
         </div>
 
+        {/* Social media section - links to company social profiles */}
         <div className="social-section">
           <h2 className="section-title">Connect With Us</h2>
           <p className="section-subtitle">
             Follow us on social media for travel inspiration, tips, and updates
           </p>
+          {/* Social media cards with links to Facebook, Instagram, and Twitter */}
           <div className="social-cards">
+            {/* Facebook link card */}
             <a href="https://www.facebook.com/hamroghum" target="_blank" rel="noopener noreferrer" className="social-card">
               <div className="social-icon-wrapper facebook">
                 <Facebook className="w-12 h-12" />
@@ -145,6 +172,7 @@ const AboutUs = () => {
               <p className="social-desc">Follow our page for daily travel updates</p>
             </a>
 
+            {/* Instagram link card */}
             <a href="https://www.instagram.com/hamroghum" target="_blank" rel="noopener noreferrer" className="social-card">
               <div className="social-icon-wrapper instagram">
                 <Instagram className="w-12 h-12" />
@@ -153,6 +181,7 @@ const AboutUs = () => {
               <p className="social-desc">See beautiful moments from our travelers</p>
             </a>
 
+            {/* Twitter/X link card */}
             <a href="https://www.twitter.com/hamroghum" target="_blank" rel="noopener noreferrer" className="social-card">
               <div className="social-icon-wrapper twitter">
                 <Twitter className="w-12 h-12" />
@@ -163,6 +192,7 @@ const AboutUs = () => {
           </div>
         </div>
 
+        {/* Call-to-action section - encourages users to start their journey */}
         <div className="cta-box">
           <h2 className="cta-title">Ready to Explore Nepal?</h2>
           <p className="cta-text">
