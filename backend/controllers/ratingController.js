@@ -1,246 +1,175 @@
+// backend/controllers/ratingController.js
 import Rating from '../models/Rating.js';
+import Package from '../models/Package.js';
+import mongoose from 'mongoose';
 
-// Rate a package
-export const ratePackage = async (req, res) => {
+// Submit or update a rating for a package
+export const submitRating = async (req, res) => {
   try {
     const { packageId, rating, comment } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
-    // Validate input
+    // Validate inputs
     if (!packageId || !rating) {
-      return res.status(400).json({ message: 'Package ID and rating are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'Package ID and rating are required',
+      });
     }
 
     if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+      return res.status(400).json({
+        success: false,
+        message: 'Rating must be between 1 and 5',
+      });
+    }
+
+    // Check if package exists
+    const packageExists = await Package.findById(packageId);
+    if (!packageExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Package not found',
+      });
     }
 
     // Check if user already rated this package
-    const existingRating = await Rating.findOne({
-      userId,
-      packageId,
-      type: 'package',
-    });
+    let existingRating = await Rating.findOne({ packageId, userId });
 
-    let result;
     if (existingRating) {
       // Update existing rating
-      result = await Rating.findByIdAndUpdate(
-        existingRating._id,
-        {
-          rating,
-          comment: comment || '',
-        },
-        { new: true }
-      );
-      return res.status(200).json({
-        message: 'Rating updated successfully',
-        rating: result,
+      existingRating.rating = rating;
+      existingRating.comment = comment || '';
+      await existingRating.save();
+    } else {
+      // Create new rating
+      existingRating = await Rating.create({
+        packageId,
+        userId,
+        rating,
+        comment: comment || '',
       });
     }
 
-    // Create new rating
-    const newRating = new Rating({
-      userId,
-      packageId,
-      rating,
-      comment: comment || '',
-      type: 'package',
-    });
+    // Recalculate package average rating and review count
+    await updatePackageRating(packageId);
 
-    result = await newRating.save();
-    res.status(201).json({
+    res.status(200).json({
+      success: true,
       message: 'Rating submitted successfully',
-      rating: result,
+      rating: existingRating,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Submit rating error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to submit rating',
+      error: error.message,
+    });
   }
 };
 
-// Rate a destination
-export const rateDestination = async (req, res) => {
-  try {
-    const { destinationId, rating, comment } = req.body;
-    const userId = req.user.id;
-
-    // Validate input
-    if (!destinationId || !rating) {
-      return res.status(400).json({ message: 'Destination ID and rating are required' });
-    }
-
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
-    }
-
-    // Check if user already rated this destination
-    const existingRating = await Rating.findOne({
-      userId,
-      destinationId,
-      type: 'destination',
-    });
-
-    let result;
-    if (existingRating) {
-      // Update existing rating
-      result = await Rating.findByIdAndUpdate(
-        existingRating._id,
-        {
-          rating,
-          comment: comment || '',
-        },
-        { new: true }
-      );
-      return res.status(200).json({
-        message: 'Rating updated successfully',
-        rating: result,
-      });
-    }
-
-    // Create new rating
-    const newRating = new Rating({
-      userId,
-      destinationId,
-      rating,
-      comment: comment || '',
-      type: 'destination',
-    });
-
-    result = await newRating.save();
-    res.status(201).json({
-      message: 'Rating submitted successfully',
-      rating: result,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get ratings for a package
+// Get all ratings for a package
 export const getPackageRatings = async (req, res) => {
   try {
     const { packageId } = req.params;
 
-    const ratings = await Rating.find({
-      packageId,
-      type: 'package',
-    })
+    const ratings = await Rating.find({ packageId })
       .populate('userId', 'name email')
       .sort({ createdAt: -1 });
 
-    // Calculate average rating
-    const averageRating =
-      ratings.length > 0
-        ? (
-            ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
-          ).toFixed(1)
-        : 0;
-
     res.status(200).json({
-      averageRating,
-      totalRatings: ratings.length,
+      success: true,
       ratings,
+      count: ratings.length,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Get ratings error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch ratings',
+      error: error.message,
+    });
   }
 };
 
-// Get ratings for a destination
-export const getDestinationRatings = async (req, res) => {
-  try {
-    const { destinationId } = req.params;
-
-    const ratings = await Rating.find({
-      destinationId,
-      type: 'destination',
-    })
-      .populate('userId', 'name email')
-      .sort({ createdAt: -1 });
-
-    // Calculate average rating
-    const averageRating =
-      ratings.length > 0
-        ? (
-            ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
-          ).toFixed(1)
-        : 0;
-
-    res.status(200).json({
-      averageRating,
-      totalRatings: ratings.length,
-      ratings,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get user's rating for a package
-export const getUserPackageRating = async (req, res) => {
+// Get user's rating for a specific package
+export const getUserRating = async (req, res) => {
   try {
     const { packageId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
-    const rating = await Rating.findOne({
-      userId,
-      packageId,
-      type: 'package',
+    const rating = await Rating.findOne({ packageId, userId });
+
+    res.status(200).json({
+      success: true,
+      rating: rating || null,
     });
-
-    if (!rating) {
-      return res.status(404).json({ message: 'No rating found' });
-    }
-
-    res.status(200).json(rating);
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get user's rating for a destination
-export const getUserDestinationRating = async (req, res) => {
-  try {
-    const { destinationId } = req.params;
-    const userId = req.user.id;
-
-    const rating = await Rating.findOne({
-      userId,
-      destinationId,
-      type: 'destination',
+    console.error('Get user rating error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user rating',
+      error: error.message,
     });
-
-    if (!rating) {
-      return res.status(404).json({ message: 'No rating found' });
-    }
-
-    res.status(200).json(rating);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
 };
 
 // Delete a rating
 export const deleteRating = async (req, res) => {
   try {
-    const { ratingId } = req.params;
-    const userId = req.user.id;
+    const { packageId } = req.params;
+    const userId = req.user._id;
 
-    const rating = await Rating.findById(ratingId);
+    const rating = await Rating.findOneAndDelete({ packageId, userId });
 
     if (!rating) {
-      return res.status(404).json({ message: 'Rating not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Rating not found',
+      });
     }
 
-    // Check if user owns the rating
-    if (rating.userId.toString() !== userId) {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
+    // Recalculate package rating
+    await updatePackageRating(packageId);
 
-    await Rating.findByIdAndDelete(ratingId);
-
-    res.status(200).json({ message: 'Rating deleted successfully' });
+    res.status(200).json({
+      success: true,
+      message: 'Rating deleted successfully',
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Delete rating error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete rating',
+      error: error.message,
+    });
+  }
+};
+
+// Helper function to update package rating
+const updatePackageRating = async (packageId) => {
+  try {
+    const ratings = await Rating.find({ packageId });
+
+    if (ratings.length === 0) {
+      // No ratings, set to default
+      await Package.findByIdAndUpdate(packageId, {
+        rating: 4.5,
+        reviews: 0,
+      });
+      return;
+    }
+
+    // Calculate average rating
+    const totalRating = ratings.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = (totalRating / ratings.length).toFixed(1);
+
+    await Package.findByIdAndUpdate(packageId, {
+      rating: parseFloat(averageRating),
+      reviews: ratings.length,
+    });
+  } catch (error) {
+    console.error('Error updating package rating:', error);
   }
 };

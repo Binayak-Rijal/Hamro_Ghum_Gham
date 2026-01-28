@@ -1,21 +1,17 @@
+// backend/models/Rating.js
 import mongoose from 'mongoose';
 
 const ratingSchema = new mongoose.Schema(
   {
+    packageId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Package',
+      required: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-    },
-    packageId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Package',
-      default: null,
-    },
-    destinationId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Destination',
-      default: null,
     },
     rating: {
       type: Number,
@@ -25,20 +21,16 @@ const ratingSchema = new mongoose.Schema(
     },
     comment: {
       type: String,
-      maxlength: 500,
-      default: '',
-    },
-    type: {
-      type: String,
-      enum: ['package', 'destination'],
-      required: true,
+      maxLength: 500,
+      trim: true,
     },
   },
   { timestamps: true }
 );
 
-// Index for faster queries
-ratingSchema.index({ packageId: 1, userId: 1 });
-ratingSchema.index({ destinationId: 1, userId: 1 });
+// Compound index to ensure one rating per user per package
+ratingSchema.index({ packageId: 1, userId: 1 }, { unique: true });
 
-export default mongoose.model('Rating', ratingSchema);
+const Rating = mongoose.models.Rating || mongoose.model('Rating', ratingSchema);
+
+export default Rating;

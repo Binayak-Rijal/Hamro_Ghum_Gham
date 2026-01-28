@@ -1,30 +1,25 @@
+// backend/routes/ratings.js
 import express from 'express';
 import auth from '../middleware/auth.js';
 import {
-  ratePackage,
-  rateDestination,
+  submitRating,
   getPackageRatings,
-  getDestinationRatings,
-  getUserPackageRating,
-  getUserDestinationRating,
+  getUserRating,
   deleteRating,
 } from '../controllers/ratingController.js';
 
 const router = express.Router();
 
-// Rate endpoints
-router.post('/package', auth, ratePackage);
-router.post('/destination', auth, rateDestination);
+// Submit or update rating (requires authentication)
+router.post('/package', auth, submitRating);
 
-// Get ratings endpoints
+// Get all ratings for a package (public)
 router.get('/package/:packageId', getPackageRatings);
-router.get('/destination/:destinationId', getDestinationRatings);
 
-// Get user's rating endpoints
-router.get('/user/package/:packageId', auth, getUserPackageRating);
-router.get('/user/destination/:destinationId', auth, getUserDestinationRating);
+// Get user's rating for a package (requires authentication)
+router.get('/package/:packageId/user', auth, getUserRating);
 
-// Delete rating endpoint
-router.delete('/:ratingId', auth, deleteRating);
+// Delete rating (requires authentication)
+router.delete('/package/:packageId', auth, deleteRating);
 
 export default router;
