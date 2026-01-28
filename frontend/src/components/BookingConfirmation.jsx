@@ -1,4 +1,14 @@
 // BookingConfirmation component - Success modal displayed after booking confirmation
+/**
+ * This component displays a success confirmation after a booking is completed
+ * Features include:
+ * - Animated success checkmark for visual feedback
+ * - Comprehensive booking details display (destination, date, guests, etc.)
+ * - Auto-generated unique booking reference number
+ * - Contact information display for customer communication
+ * - Modal overlay with click-outside-to-close functionality
+ * - Responsive design for all screen sizes
+ */
 
 import React, { useState, useEffect } from 'react';
 // Import icons for visual elements (check, close, calendar, etc.)
@@ -21,6 +31,9 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
   useEffect(() => {
     if (isOpen) {
       // Create random alphanumeric reference code (e.g., "A3F7G2K9P")
+      // Math.random().toString(36) converts to base-36 (0-9, a-z)
+      // substr(2, 9) removes "0." prefix and takes 9 characters
+      // toUpperCase() converts to uppercase for professional appearance
       setBookingReference(Math.random().toString(36).substr(2, 9).toUpperCase());
     }
   }, [isOpen]);
@@ -30,8 +43,10 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
 
   return (
     // Overlay that closes modal when clicked
+    // Full-screen semi-transparent background
     <div className="booking-popup-overlay" onClick={onClose}>
       {/* Modal container - stops propagation to prevent closing when clicking inside */}
+      {/* e.stopPropagation() ensures clicks inside modal don't trigger overlay's onClick */}
       <div className="booking-popup-container" onClick={(e) => e.stopPropagation()}>
         {/* Close button in top corner */}
         <button className="booking-popup-close" onClick={onClose}>
@@ -80,6 +95,7 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
               <Users size={20} />
               <div className="booking-detail-content">
                 <span className="booking-detail-label">Guests</span>
+                {/* Conditionally display singular or plural form */}
                 <span className="booking-detail-value">
                   {bookingDetails.guests} {bookingDetails.guests === 1 ? 'Person' : 'People'}
                 </span>
@@ -87,6 +103,7 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
             </div>
 
             {/* Optional: Display duration if provided */}
+            {/* Conditional rendering - only shows if duration exists in bookingDetails */}
             {bookingDetails.duration && (
               <div className="booking-detail-item">
                 <Clock size={20} />
@@ -98,6 +115,7 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
             )}
 
             {/* Optional: Display total price if provided */}
+            {/* Special styling for total price to emphasize cost */}
             {bookingDetails.total && (
               <div className="booking-detail-item booking-total-price">
                 <div className="booking-detail-content">
@@ -109,10 +127,12 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
           </div>
 
           {/* Contact Info */}
+          {/* Section showing where customer will be contacted */}
           <div className="booking-contact-info-box">
             <p className="booking-contact-title">We'll reach you at:</p>
             <div className="booking-contact-details">
               {/* Display email if provided */}
+              {/* Conditional rendering - only shows available contact methods */}
               {bookingDetails.email && (
                 <div className="booking-contact-item">
                   <Mail size={16} />
@@ -130,11 +150,14 @@ export default function BookingConfirmation({ isOpen, onClose, bookingDetails })
           </div>
 
           {/* Confirmation Number */}
+          {/* Display unique reference number for customer records */}
+          {/* Customer can use this reference for inquiries or modifications */}
           <div className="booking-confirmation-number">
             <p>Booking Reference: <strong>#{bookingReference}</strong></p>
           </div>
 
           {/* Action Button */}
+          {/* Primary action to close the confirmation modal */}
           <button className="booking-popup-button" onClick={onClose}>
             Done
           </button>
