@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import './ContactPage.css';
@@ -37,7 +38,7 @@ export default function ContactPage() {
     e.preventDefault();
     
     // For now, just show success message (backend will be added later)
-    alert('Message sent successfully!');
+    toast.success('Message sent successfully!');
     
     // Reset form
     setFormData({

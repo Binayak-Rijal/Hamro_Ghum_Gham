@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, Mail, Phone, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import ScrollToTop from './ScrollToTop';
 import './ViewBooking.css';
@@ -64,11 +65,11 @@ export default function ViewBooking() {
         // Dispatch event to update navbar count
         window.dispatchEvent(new Event('bookingsChanged'));
         
-        alert('Booking cancelled successfully');
+        toast.success('Booking cancelled successfully');
       }
     } catch (err) {
       console.error('Error cancelling booking:', err);
-      alert('Failed to cancel booking. Please try again.');
+      toast.error('Failed to cancel booking. Please try again.');
     }
   };
 
