@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import './AboutUs.css';
-
+//smalll adjustments made in AboutUs.css for better styling
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-white">

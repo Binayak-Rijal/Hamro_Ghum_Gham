@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './RateDestination.css';
-
+//small adjustments made in RateDestination.css for better styling
 const RateDestination = ({ destinationId, onClose, onSuccess }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);

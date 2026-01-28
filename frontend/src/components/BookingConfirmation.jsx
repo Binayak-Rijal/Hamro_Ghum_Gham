@@ -1,7 +1,4 @@
-// ============================================
-// BookingConfirmation.jsx
-// Location: src/components/BookingConfirmation.jsx
-// ============================================
+
 
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, X, Calendar, Users, MapPin, Clock, Mail, Phone } from 'lucide-react';
