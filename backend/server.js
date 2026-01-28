@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+
+
+
+// backend/server.js
+>>>>>>> be5101cc92504a968f0fca43fdf02b0f72dad7a2
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
