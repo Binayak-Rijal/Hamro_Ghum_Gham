@@ -11,8 +11,8 @@ import adminRoutes from './routes/admin.js';
 import packagesRoutes from './routes/packages.js';
 import destinationsRoutes from './routes/destinations.js';
 import passwordRoutes from './routes/password.js';
+import ratingsRoutes from './routes/ratings.js';
 import searchRoutes from './routes/search.js';
-import ratingsRouter from './routes/ratings.js';
 import { testEmailConnection } from './controllers/passwordController.js';
 
 dotenv.config();
@@ -47,15 +47,15 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/packages', packagesRoutes);
 app.use('/api/destinations', destinationsRoutes);
 app.use('/api/password', passwordRoutes);
-app.use('/api', searchRoutes);
-app.use('/api/ratings', ratingsRouter);
+app.use('/api/ratings', ratingsRoutes);
+app.use('/api/search', searchRoutes);
 
 // Health check
 app.get('/', (req, res) => {
   res.json({ message: 'Travel Booking API is running' });
 });
 
-// Error handling middleware (should be last)
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -65,8 +65,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
