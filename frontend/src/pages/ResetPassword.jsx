@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import ScrollToTop from "../components/ScrollToTop";
 import axios from "axios";
 import "./ResetPassword.css";
 
@@ -92,6 +93,7 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-password-container">
+      <ScrollToTop />
       <div className="reset-password-left">
         <div className="hero-content">
           <h1 className="hero-title">Create New Password</h1>

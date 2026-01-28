@@ -12,7 +12,7 @@ import ScrollToTop from '../components/ScrollToTop';
 import './DestinationDetail.css';
 import BookingConfirmation from '../components/BookingConfirmation';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:3000/api';
 
 // Helper function for auth headers
 const getAuthHeader = () => {
@@ -93,64 +93,13 @@ export default function DestinationDetail() {
   };
 
   // ✅ UPDATED: Toggle save/unsave using database
-const handleSaveToggle = async () => {
-  if (!isAuthenticated()) {
-    toast.info('Please login to save destinations');
-    navigate('/login');
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('No authentication token found. Please login again.');
-
+  const handleSaveToggle = async () => {
+    if (!isAuthenticated()) {
+      toast.info('Please login to save destinations');
       navigate('/login');
       return;
     }
 
-    if (isSaved) {
-      // Remove destination from saved
-      const response = await axios.delete(
-        `http://localhost:3000/api/saved/${destinationId}/destination`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      if (response.data.success) {
-        setIsSaved(false);
-        toast.success('Destination removed from saved items');
-
-        // 🔄 Update navbar
-        window.dispatchEvent(new Event('savedItemsChanged'));
-      }
-    } else {
-      // Add destination to saved
-      const response = await axios.post(
-        'http://localhost:3000/api/saved',
-        {
-          itemId: destinationInfo.id,
-          itemType: 'destination',
-          name: destinationInfo.name,
-          location: destinationInfo.location,
-          price: destinationInfo.price,
-          image: destinationInfo.image,
-          rating: destinationInfo.rating
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.data.success) {
-        setIsSaved(true);
-        toast.success('Destination saved successfully!');
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -209,15 +158,6 @@ const handleSaveToggle = async () => {
       }
     }
   };
-
-    if (error.response?.status === 401) {
-      toast.error('Your session has expired. Please login again.');
-      navigate('/login');
-    } else if (error.response?.status === 400) {
-      toast.error(error.response.data.message || 'Item already saved');
-    } else {
-      toast.error('Failed to update saved status. Please check your connection and try again.');
-    }
   // Loading state
   if (loading) {
     return (

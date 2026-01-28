@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import ScrollToTop from "../components/ScrollToTop";
 import "./SignUp.css";
 
 const backgroundUrl = `/images/background.jpg`;
@@ -140,6 +141,7 @@ const SignUp = () => {
 
   return (
     <div className="signup-container">
+      <ScrollToTop />
       <div
         className="signup-left"
         style={{ "--bg-image": `url(${backgroundUrl})` }}

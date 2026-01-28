@@ -514,6 +514,7 @@ export default function PackageDetail() {
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
+  const [userRating, setUserRating] = useState(null);
   
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -524,10 +525,6 @@ export default function PackageDetail() {
     guests: 1
   });
   const [errors, setErrors] = useState({});
-
-  // ✅ NEW: Rating modal state
-  const [showRatingModal, setShowRatingModal] = useState(false);
-  const [userRating, setUserRating] = useState(null);
 
   // ✅ Fetch package data from database
   useEffect(() => {
@@ -720,8 +717,9 @@ export default function PackageDetail() {
     const { name, value } = e.target;
     setBookingData(prev => ({
       ...prev,
-      [name]: name === 'guests' ? parseInt(value) || 1 : value
+      [name]: name === 'guests' ? (value === '' ? 1 : Math.max(1, parseInt(value) || 1)) : value
     }));
+    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -731,36 +729,45 @@ export default function PackageDetail() {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!bookingData.fullName.trim()) {
+    console.log('Validating form with data:', bookingData);
+    
+    if (!bookingData.fullName || !bookingData.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
     } else if (bookingData.fullName.trim().length < 2) {
       newErrors.fullName = 'Full name must be at least 2 characters';
     }
     
-    const phoneRegex = /^[0-9]{9,15}$/;
     const phoneDigits = bookingData.phone.replace(/\D/g, '');
-    if (!bookingData.phone.trim()) {
+    if (!bookingData.phone || !bookingData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    } else if (!phoneRegex.test(phoneDigits)) {
+    } else if (phoneDigits.length < 9 || phoneDigits.length > 15) {
       newErrors.phone = 'Please enter a valid phone number (9-15 digits)';
     }
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selectedDate = new Date(bookingData.date);
-    
     if (!bookingData.date) {
       newErrors.date = 'Date is required';
-    } else if (selectedDate < today) {
-      newErrors.date = 'Please select a future date';
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      // Parse the date from input (YYYY-MM-DD format)
+      const [year, month, day] = bookingData.date.split('-');
+      const selectedDate = new Date(year, month - 1, day);
+      selectedDate.setHours(0, 0, 0, 0);
+      
+      console.log('Today:', today, 'Selected:', selectedDate);
+      
+      if (selectedDate < today) {
+        newErrors.date = 'Please select a future date';
+      }
     }
     
-    if (bookingData.guests < 1 || isNaN(bookingData.guests)) {
+    if (bookingData.guests < 1) {
       newErrors.guests = 'At least 1 guest is required';
     } else if (bookingData.guests > 20) {
       newErrors.guests = 'Maximum 20 guests allowed';
     }
     
+    console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -780,45 +787,27 @@ export default function PackageDetail() {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/bookings',
-        {
-          packageId: packageInfo.id,
-          packageName: packageInfo.name,
-          fullName: bookingData.fullName,
-          phone: bookingData.phone.replace(/\D/g, ''), // Clean phone number
-          travelDate: bookingData.date, // Changed from 'date' to 'travelDate'
-          numberOfPeople: bookingData.guests, // Changed from 'guests' to 'numberOfPeople'
-          subtotal,
-          serviceCharge,
-          totalPrice: total
-        },
-        { headers: getAuthHeader() }
-      );
-
-      if (response.data.success) {
-        //  Show popup instead of toast
-        setConfirmedBooking({
-          packageName: packageInfo.name,
-          date: bookingData.date,
-          guests: bookingData.guests,
-          duration: packageInfo.duration,
-          phone: bookingData.phone,
-          total: total
-        });
-        setShowConfirmation(true);
-        
-        // Reset form
-        setBookingData({
-          fullName: '',
-          phone: '',
-          date: '',
-          guests: 1
-        });
-      }
+      // Store booking data in localStorage
+      const bookingInfo = {
+        packageId: packageInfo._id,
+        packageName: packageInfo.title,
+        fullName: bookingData.fullName,
+        phone: bookingData.phone.replace(/\D/g, ''),
+        travelDate: bookingData.date,
+        numberOfPeople: bookingData.guests,
+        subtotal,
+        serviceCharge,
+        totalPrice: total
+      };
+      
+      console.log('Booking data to save:', bookingInfo);
+      localStorage.setItem('pendingBooking', JSON.stringify(bookingInfo));
+      
+      // Navigate to complete booking page
+      navigate('/complete-booking');
     } catch (error) {
-      console.error('Booking error:', error);
-      toast.error(error.response?.data?.message || 'Booking failed. Please try again.');
+      console.error('Error preparing booking:', error);
+      toast.error('Failed to prepare booking. Please try again.');
     }
   };
 

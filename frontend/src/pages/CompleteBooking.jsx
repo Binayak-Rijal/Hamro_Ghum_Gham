@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
+import BookingConfirmation from '../components/BookingConfirmation';
 import './CompleteBooking.css';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:3000/api';
 
 const CompleteBooking = () => {
   const navigate = useNavigate();
@@ -14,6 +16,8 @@ const CompleteBooking = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [bookingData, setBookingData] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   useEffect(() => {
     const pendingBooking = localStorage.getItem('pendingBooking');
@@ -75,18 +79,36 @@ const CompleteBooking = () => {
       );
 
       if (response.data.success) {
+        // Show confirmation popup with booking details
+        setConfirmedBooking({
+          packageName: bookingData.packageName,
+          date: bookingData.travelDate,
+          guests: bookingData.numberOfPeople,
+          phone: bookingData.phone,
+          total: bookingData.totalPrice
+        });
+        setShowConfirmation(true);
+        
         // Clear pending booking
         localStorage.removeItem('pendingBooking');
-        toast.success('Booking completed successfully!');
-        // Navigate to booking confirmation or bookings page
-        navigate('/bookings');
+        
+        // Clear form
+        setCardNumber('');
+        setExpirationDate('');
       }
     } catch (error) {
       console.error('Booking error:', error);
+      console.error('Error response:', error.response?.data);
       toast.error(error.response?.data?.message || 'Booking failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleConfirmationClose = () => {
+    setShowConfirmation(false);
+    // Navigate to bookings page after closing confirmation
+    navigate('/bookings');
   };
 
   if (!bookingData) {
@@ -95,6 +117,7 @@ const CompleteBooking = () => {
 
   return (
     <div className="complete-booking-page">
+      <ScrollToTop />
       <Navbar />
       <div className="complete-booking-container">
         <div className="complete-booking-form-container">
@@ -146,6 +169,14 @@ const CompleteBooking = () => {
           </form>
         </div>
       </div>
+
+      {showConfirmation && confirmedBooking && (
+        <BookingConfirmation
+          isOpen={showConfirmation}
+          onClose={handleConfirmationClose}
+          bookingDetails={confirmedBooking}
+        />
+      )}
     </div>
   );
 };

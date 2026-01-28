@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
+import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './AdminDashboard.css';
 
@@ -110,7 +112,7 @@ const AdminDashboard = () => {
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      alert('Error loading dashboard data');
+      toast.error('Error loading dashboard data');
     } finally {
       setLoading(false);
     }
@@ -154,7 +156,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching package:', error);
-      alert('Error loading package data');
+      toast.error('Error loading package data');
     }
   };
 
@@ -162,7 +164,7 @@ const AdminDashboard = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
+        toast.error('Image size must be less than 5MB');
         return;
       }
       setImageFile(file);
@@ -254,12 +256,12 @@ const AdminDashboard = () => {
     e.preventDefault();
     
     if (!formData.title || !formData.price) {
-      alert('Title and Price are required!');
+      toast.error('Title and Price are required!');
       return;
     }
 
     if (!imageFile) {
-      alert('Please select an image!');
+      toast.error('Please select an image!');
       return;
     }
 
@@ -295,13 +297,13 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Package added successfully!');
+        toast.success('Package added successfully!');
         resetForm();
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error adding package:', error);
-      alert(error.response?.data?.message || 'Error adding package');
+      toast.error(error.response?.data?.message || 'Error adding package');
     } finally {
       setFormLoading(false);
     }
@@ -312,7 +314,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     
     if (!formData.title || !formData.price) {
-      alert('Title and Price are required!');
+      toast.error('Title and Price are required!');
       return;
     }
 
@@ -352,13 +354,13 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Package updated successfully!');
+        toast.success('Package updated successfully!');
         resetForm();
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error updating package:', error);
-      alert(error.response?.data?.message || 'Error updating package');
+      toast.error(error.response?.data?.message || 'Error updating package');
     } finally {
       setFormLoading(false);
     }
@@ -378,12 +380,12 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Package deleted successfully!');
+        toast.success('Package deleted successfully!');
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error deleting package:', error);
-      alert(error.response?.data?.message || 'Error deleting package');
+      toast.error(error.response?.data?.message || 'Error deleting package');
     }
   };
 
@@ -476,12 +478,12 @@ const AdminDashboard = () => {
     e.preventDefault();
     
     if (!destinationFormData.name || !destinationFormData.price || !destinationFormData.location) {
-      alert('Name, location, and price are required!');
+      toast.error('Name, location, and price are required!');
       return;
     }
 
     if (!imageFile) {
-      alert('Please select an image!');
+      toast.error('Please select an image!');
       return;
     }
         try {
@@ -518,13 +520,13 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Destination added successfully!');
+        toast.success('Destination added successfully!');
         resetDestinationForm();
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error adding destination:', error);
-      alert(error.response?.data?.message || 'Error adding destination');
+      toast.error(error.response?.data?.message || 'Error adding destination');
     } finally {
       setFormLoading(false);
     }
@@ -566,7 +568,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching destination:', error);
-      alert('Error loading destination data');
+      toast.error('Error loading destination data');
     }
   };
 
@@ -574,7 +576,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     
     if (!destinationFormData.name || !destinationFormData.price || !destinationFormData.location) {
-      alert('Name, location, and price are required!');
+      toast.error('Name, location, and price are required!');
       return;
     }
 
@@ -616,13 +618,13 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Destination updated successfully!');
+        toast.success('Destination updated successfully!');
         resetDestinationForm();
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error updating destination:', error);
-      alert(error.response?.data?.message || 'Error updating destination');
+      toast.error(error.response?.data?.message || 'Error updating destination');
     } finally {
       setFormLoading(false);
     }
@@ -642,12 +644,12 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('Destination deleted successfully!');
+        toast.success('Destination deleted successfully!');
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error deleting destination:', error);
-      alert(error.response?.data?.message || 'Error deleting destination');
+      toast.error(error.response?.data?.message || 'Error deleting destination');
     }
   };
 
@@ -668,13 +670,13 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert(`Booking status updated to ${newStatus}!`);
+        toast.success(`Booking status updated to ${newStatus}!`);
         await fetchDashboardData();
         setShowBookingModal(false);
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
-      alert(error.response?.data?.message || 'Error updating booking status');
+      toast.error(error.response?.data?.message || 'Error updating booking status');
     }
   };
 
@@ -698,12 +700,12 @@ const AdminDashboard = () => {
       );
 
       if (response.data.success) {
-        alert('User deleted successfully!');
+        toast.success('User deleted successfully!');
         await fetchDashboardData();
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert(error.response?.data?.message || 'Error deleting user');
+      toast.error(error.response?.data?.message || 'Error deleting user');
     }
   };
 
@@ -1396,6 +1398,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
+      <ScrollToTop />
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <h2>Admin Panel</h2>

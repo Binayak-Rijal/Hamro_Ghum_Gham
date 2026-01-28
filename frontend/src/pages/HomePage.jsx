@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ChevronRight, Star, MapPin, Calendar, Users } from 'lucide-react';
 import './HomePage.css';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 
 export default function HomePage() {
@@ -60,6 +61,7 @@ export default function HomePage() {
   return (
     <div className="homepage">
       <Navbar />
+      <ScrollToTop />
 
       <main className="main-content">
         {/* Hero Section */}

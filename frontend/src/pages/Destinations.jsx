@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Star, Users } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './Destinations.css';
 
@@ -12,7 +13,7 @@ export default function Destinations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = 'http://localhost:3000/api';
 
   // ✅ Fetch destinations from database on component mount
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function Destinations() {
   return (
     <div className="destinations-page">
       <Navbar />
+      <ScrollToTop />
       
       <main className="destinations-main">
         {/* Hero Section */}
