@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, Bookmark, Calendar } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Navbar.css';
-
+//savedCount and bookingsCount fetching logic improved with detailed logging for debugging
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [savedCount, setSavedCount] = useState(0);

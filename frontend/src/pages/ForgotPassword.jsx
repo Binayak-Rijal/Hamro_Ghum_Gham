@@ -1,25 +1,39 @@
 // frontend/src/pages/ForgotPassword.jsx
+/**
+ * ForgotPassword Component
+ * Page that allows users to initiate password reset by sending a verification code to email
+ * After successful code generation, navigates to ResetPassword page
+ */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "./ForgotPassword.css";
 
+// Backend API base URL
 const API_URL = 'http://localhost:3000/api';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  // State for email input field
   const [email, setEmail] = useState("");
+  // State for loading status during API call
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Handles forgot password form submission
+   * Validates email, sends reset code to user's email, and navigates to reset page
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate email is not empty
     if (!email) {
       toast.error("Please enter your email address");
       return;
     }
 
+    // Validate email format using regex
     if (!/\S+@\S+\.\S+/.test(email)) {
       toast.error("Please enter a valid email address");
       return;
@@ -28,6 +42,7 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
+      // Send POST request to generate reset code
       const response = await axios.post(`${API_URL}/password/forgot`, {
         email: email.toLowerCase()
       });
@@ -35,7 +50,7 @@ const ForgotPassword = () => {
       if (response.data.success) {
         toast.success("Password reset code has been sent to your email!");
         
-        // Navigate to reset password page with token
+        // Navigate to reset password page with token and email
         navigate('/reset-password', {
           state: { 
             resetToken: response.data.resetToken,
@@ -44,7 +59,7 @@ const ForgotPassword = () => {
         });
       }
     } catch (error) {
-      // ✅ Show specific error messages
+      // Show specific error messages based on response status
       if (error.response?.status === 404) {
         toast.error("This email is not registered. Please sign up first.");
       } else {
@@ -59,6 +74,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="forgot-password-container">
+      {/* Left side: Hero section with informational text */}
       <div className="forgot-password-left">
         <div className="hero-content">
           <h1 className="hero-title">Forgot Your Password?</h1>
@@ -69,8 +85,10 @@ const ForgotPassword = () => {
         </div>
       </div>
 
+      {/* Right side: Form section */}
       <div className="forgot-password-right">
         <div className="forgot-password-form-container">
+          {/* Logo with fallback to placeholder */}
           <div className="forgot-password-logo-container">
             <img
               src="/images/logo.png"
@@ -84,12 +102,15 @@ const ForgotPassword = () => {
             <div className="forgot-password-logo-placeholder">HGG</div>
           </div>
 
+          {/* Form title and description */}
           <h2 className="forgot-password-form-title">Reset Password</h2>
           <p className="forgot-password-form-subtitle">
             Enter your email address and we'll send you a code to reset your password
           </p>
 
+          {/* Password reset form */}
           <form onSubmit={handleSubmit} className="forgot-password-form">
+            {/* Email input field */}
             <div className="forgot-password-form-group">
               <label className="forgot-password-label">Email Address</label>
               <input
@@ -103,6 +124,7 @@ const ForgotPassword = () => {
               />
             </div>
 
+            {/* Submit button with loading state */}
             <button
               type="submit"
               disabled={isLoading}
@@ -118,6 +140,7 @@ const ForgotPassword = () => {
               )}
             </button>
 
+            {/* Link to navigate back to login page */}
             <div className="forgot-password-back-container">
               <Link to="/login" className="forgot-password-back-link">
                 ← Back to Login

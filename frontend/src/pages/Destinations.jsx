@@ -1,24 +1,36 @@
 // frontend/src/pages/Destinations.jsx
+/**
+ * Destinations Component
+ * Main page that displays all available travel destinations
+ * Fetches destination data from backend API and displays in a responsive grid
+ */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+// Import icons for visual elements (map pin, star, users)
 import { MapPin, Star, Users } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
 import './Destinations.css';
 
 export default function Destinations() {
-  // ✅ State for destinations from database
+  // State for storing destination data from database
   const [destinations, setDestinations] = useState([]);
+  // State for loading status during API fetch
   const [loading, setLoading] = useState(true);
+  // State for error messages if fetch fails
   const [error, setError] = useState(null);
 
   const API_URL = 'http://localhost:5000/api';
 
-  // ✅ Fetch destinations from database on component mount
+  // Fetch destinations from database on component mount
   useEffect(() => {
     fetchDestinations();
   }, []);
 
+  /**
+   * Fetches all destinations from backend API
+   * Updates state with destination data or error message
+   */
   const fetchDestinations = async () => {
     try {
       setLoading(true);
@@ -35,7 +47,7 @@ export default function Destinations() {
     }
   };
 
-  // ✅ Loading state
+  // Render loading state while fetching data
   if (loading) {
     return (
       <div className="destinations-page">
@@ -53,7 +65,7 @@ export default function Destinations() {
     );
   }
 
-  // ✅ Error state
+  // Render error state with retry button if fetch fails
   if (error) {
     return (
       <div className="destinations-page">
@@ -66,6 +78,7 @@ export default function Destinations() {
           flexDirection: 'column' 
         }}>
           <p style={{ color: '#ef4444', fontSize: '18px' }}>{error}</p>
+          {/* Retry button to attempt fetch again */}
           <button 
             onClick={fetchDestinations}
             style={{
@@ -106,6 +119,7 @@ export default function Destinations() {
         {/* Destinations Grid */}
         <section className="destinations-section">
           <div className="destinations-container">
+            {/* Section header with destination count */}
             <div className="destinations-header">
               <h2 className="section-title">Popular Destinations</h2>
               <p className="section-subtitle">
@@ -113,6 +127,7 @@ export default function Destinations() {
               </p>
             </div>
 
+            {/* Empty state when no destinations are available */}
             {destinations.length === 0 ? (
               <div style={{ 
                 textAlign: 'center', 
@@ -138,13 +153,16 @@ export default function Destinations() {
                 </p>
               </div>
             ) : (
+              // Grid of destination cards
               <div className="destinations-grid">
+                {/* Map through destinations and create clickable cards */}
                 {destinations.map((destination) => (
                   <Link 
                     key={destination._id} 
                     to={`/destination/${destination._id}`} 
                     className="destination-card"
                   >
+                    {/* Destination image with error handling */}
                     <div className="destination-image-container">
                       <img 
                         src={destination.image || '/images/default.jpg'} 
@@ -157,20 +175,24 @@ export default function Destinations() {
                       <div className="destination-badge">{destination.badge || 'Featured'}</div>
                     </div>
                     
+                    {/* Destination card content */}
                     <div className="destination-content">
                       <h3 className="destination-name">{destination.name}</h3>
                       
+                      {/* Location with map pin icon */}
                       <div className="destination-location">
                         <MapPin className="location-icon" />
                         <span>{destination.location}</span>
                       </div>
                       
+                      {/* Truncated description (max 120 characters) */}
                       <p className="destination-description">
                         {destination.description 
                           ? `${destination.description.substring(0, 120)}...` 
                           : 'Discover the beauty and culture of this amazing destination.'}
                       </p>
                       
+                      {/* Destination metadata: rating and visitor count */}
                       <div className="destination-meta">
                         <div className="destination-rating">
                           <Star className="star-icon" fill="#f97316" />
@@ -182,6 +204,7 @@ export default function Destinations() {
                         </div>
                       </div>
                       
+                      {/* Card footer with price and explore button */}
                       <div className="destination-footer">
                         <div className="destination-price">
                           <span className="price-label">Starting at</span>
@@ -199,13 +222,14 @@ export default function Destinations() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* CTA Section - Encourages users to explore tour packages */}
         <section className="destinations-cta">
           <div className="cta-content">
             <h2 className="cta-title">Ready to Start Your Journey?</h2>
             <p className="cta-description">
               Browse our tour packages for complete travel experiences
             </p>
+            {/* Link to tours page */}
             <Link to="/tours" className="cta-button">
               View All Tours
             </Link>
