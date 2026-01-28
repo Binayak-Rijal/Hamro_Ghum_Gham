@@ -8,6 +8,9 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+
+  const API_URL = 'http://localhost:5000/api';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -22,6 +25,7 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/ratings/package`, {
+      const response = await fetch(`${API_URL}/ratings/package`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,4 +103,5 @@ const RatePackages = ({ packageId, onClose, onSuccess }) => {
   );
 };
 
+export default RatePackages;
 export default RatePackages;
