@@ -3,6 +3,18 @@
  * Destinations Component
  * Main page that displays all available travel destinations
  * Fetches destination data from backend API and displays in a responsive grid
+ * 
+ * Features:
+ * - Dynamic data fetching from backend API
+ * - Loading state with spinner animation
+ * - Error state with retry functionality
+ * - Empty state when no destinations available
+ * - Responsive grid layout for destination cards
+ * - Image error handling with fallback to default image
+ * - Rating and visitor count display
+ * - Price formatting with NPR currency
+ * - Click-to-navigate destination details
+ * - Call-to-action section for tour packages
  */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,34 +42,46 @@ export default function Destinations() {
   /**
    * Fetches all destinations from backend API
    * Updates state with destination data or error message
+   * Handles loading states and error scenarios
    */
   const fetchDestinations = async () => {
     try {
+      // Set loading to true before API call
       setLoading(true);
+      
+      // GET request to fetch all destinations
       const response = await axios.get(`${API_URL}/destinations`);
       
+      // Check if API response was successful
       if (response.data.success) {
+        // Update state with fetched destinations array
         setDestinations(response.data.destinations);
       }
     } catch (error) {
+      // Log error for debugging purposes
       console.error('Error fetching destinations:', error);
+      // Set user-friendly error message
       setError('Failed to load destinations');
     } finally {
+      // Always set loading to false, regardless of success or failure
       setLoading(false);
     }
   };
 
   // Render loading state while fetching data
+  // Shows spinner and message until API call completes
   if (loading) {
     return (
       <div className="destinations-page">
         <Navbar />
+        {/* Centered loading container */}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
           minHeight: '100vh' 
         }}>
+          {/* Spinner animation defined in CSS */}
           <div className="spinner"></div>
           <p style={{ marginLeft: '20px' }}>Loading destinations...</p>
         </div>
@@ -66,6 +90,7 @@ export default function Destinations() {
   }
 
   // Render error state with retry button if fetch fails
+  // Provides user-friendly error message and option to retry
   if (error) {
     return (
       <div className="destinations-page">
@@ -77,8 +102,10 @@ export default function Destinations() {
           minHeight: '100vh',
           flexDirection: 'column' 
         }}>
+          {/* Display error message in red */}
           <p style={{ color: '#ef4444', fontSize: '18px' }}>{error}</p>
           {/* Retry button to attempt fetch again */}
+          {/* Calls fetchDestinations() to retry API call */}
           <button 
             onClick={fetchDestinations}
             style={{
@@ -128,6 +155,7 @@ export default function Destinations() {
             </div>
 
             {/* Empty state when no destinations are available */}
+            {/* Shows friendly message instead of empty grid */}
             {destinations.length === 0 ? (
               <div style={{ 
                 textAlign: 'center', 
@@ -156,22 +184,27 @@ export default function Destinations() {
               // Grid of destination cards
               <div className="destinations-grid">
                 {/* Map through destinations and create clickable cards */}
+                {/* Each card is a Link component for navigation to detail page */}
                 {destinations.map((destination) => (
                   <Link 
                     key={destination._id} 
+                    // Navigate to individual destination detail page
                     to={`/destination/${destination._id}`} 
                     className="destination-card"
                   >
                     {/* Destination image with error handling */}
                     <div className="destination-image-container">
                       <img 
+                        // Use destination image or fallback to default
                         src={destination.image || '/images/default.jpg'} 
                         alt={destination.name} 
                         className="destination-image"
+                        // onError handles broken image links
                         onError={(e) => {
                           e.target.src = '/images/default.jpg';
                         }}
                       />
+                      {/* Badge overlay (e.g., "Featured", "Popular") */}
                       <div className="destination-badge">{destination.badge || 'Featured'}</div>
                     </div>
                     
@@ -186,9 +219,12 @@ export default function Destinations() {
                       </div>
                       
                       {/* Truncated description (max 120 characters) */}
+                      {/* Prevents long descriptions from breaking card layout */}
                       <p className="destination-description">
                         {destination.description 
+                          // If description exists, truncate to 120 chars and add ellipsis
                           ? `${destination.description.substring(0, 120)}...` 
+                          // Fallback text if no description provided
                           : 'Discover the beauty and culture of this amazing destination.'}
                       </p>
                       
@@ -208,6 +244,8 @@ export default function Destinations() {
                       <div className="destination-footer">
                         <div className="destination-price">
                           <span className="price-label">Starting at</span>
+                          {/* Format price with thousands separator (e.g., 10,000) */}
+                          {/* Optional chaining (?.) prevents error if price is undefined */}
                           <span className="price-amount">NPR {destination.price?.toLocaleString()}</span>
                         </div>
                         <button className="destination-button">
