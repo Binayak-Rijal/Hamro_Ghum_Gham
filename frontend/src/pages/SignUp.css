@@ -1,13 +1,25 @@
-/* Split Screen Signup Design */
+
+
+/* REMOVED GLOBAL STYLES TO FIX SCROLLING ON OTHER PAGES */
+
 .signup-container {
   display: flex;
   min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
 }
 
-/* Left Side - Hero Section with Background */
+
+
 .signup-left {
-  flex: 0 0 60%; /* 60% width */
+  flex: 0 0 60%;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
   position: relative;
   display: flex;
@@ -64,9 +76,12 @@
   text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Right Side - Form Section */
+/* ========================================
+   RIGHT SIDE - FORM SECTION
+   ======================================== */
+
 .signup-right {
-  flex: 0 0 40%; /* 40% width */
+  flex: 0 0 40%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,10 +93,10 @@
 
 .signup-form-container {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
+  padding: 20px 0;
 }
 
-/* i want the logo at the center */
 .signup-logo-container {
   position: absolute;
   top: 30px;
@@ -90,16 +105,16 @@
 }
 
 .signup-logo {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
 .signup-logo-placeholder {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
@@ -111,47 +126,53 @@
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
-/* Form Title */
+/* ========================================
+   FORM TITLE & SUBTITLE
+   ======================================== */
+
 .signup-form-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #2d3748;
-  margin-bottom: 8px;
-  margin-top: 80px; /* Space for logo */
+  margin-bottom: 6px;
+  margin-top: 60px;
   text-align: center;
 }
 
 .signup-form-subtitle {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #718096;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   text-align: center;
 }
 
-/* Form */
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+
 .signup-form {
   display: flex;
   flex-direction: column;
 }
 
 .signup-form-group {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .signup-label {
   display: block;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #4a5568;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .signup-input {
   width: 100%;
-  padding: 14px 16px;
-  font-size: 1rem;
+  padding: 11px 14px;
+  font-size: 0.95rem;
   border: 2px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 8px;
   background-color: #f7fafc;
   transition: all 0.3s ease;
   outline: none;
@@ -162,7 +183,7 @@
 .signup-input:focus {
   border-color: #667eea;
   background-color: #fff;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   transform: translateY(-1px);
 }
 
@@ -175,64 +196,76 @@
   background-color: #fff5f5;
 }
 
+/* Password Input with Eye Icon */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper .signup-input {
+  padding-right: 42px;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-icon:hover {
+  color: #667eea;
+}
+
 /* Error Message */
 .signup-error-text {
   display: block;
   color: #e53e3e;
-  font-size: 0.85rem;
-  margin-top: 6px;
+  font-size: 0.8rem;
+  margin-top: 5px;
   font-weight: 500;
 }
 
-/* Show Password Checkbox */
-.show-password-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  margin-top: 12px;
-}
+/* ========================================
+   SUBMIT BUTTON
+   ======================================== */
 
-.show-password-checkbox {
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  margin-right: 10px;
-  cursor: pointer;
-  accent-color: #667eea;
-}
-
-.show-password-label {
-  font-size: 0.95rem;
-  color: #4a5568;
-  cursor: pointer;
-  user-select: none;
-  font-weight: 500;
-}
-
-/* Submit Button */
 .signup-submit-button {
   width: 100%;
-  padding: 16px;
-  font-size: 1.1rem;
+  padding: 13px;
+  font-size: 1.05rem;
   font-weight: 600;
   color: white;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 12px;
-  margin-bottom: 24px;
+  margin-top: 8px;
+  margin-bottom: 20px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.signup-submit-button:hover {
+.signup-submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
-.signup-submit-button:active {
+.signup-submit-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
@@ -249,38 +282,39 @@
 
 /* Loading Spinner */
 .signup-spinner {
-  width: 16px;
-  height: 16px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 0.8s linear infinite;
   display: inline-block;
-  margin-right: 10px;
-  vertical-align: middle;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Login Link Section */
+/* ========================================
+   LOGIN LINK SECTION
+   ======================================== */
+
 .signup-login-container {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid #e2e8f0;
 }
 
 .signup-login-text {
   color: #718096;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .signup-login-link {
   color: #667eea;
   font-weight: 600;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   margin-left: 4px;
   transition: color 0.2s ease;
 }
@@ -290,7 +324,10 @@
   text-decoration: underline;
 }
 
-/* Responsive Design */
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
 @media (max-width: 1024px) {
   .hero-title {
     font-size: 2.5rem;
@@ -308,11 +345,15 @@
 @media (max-width: 768px) {
   .signup-container {
     flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-y: auto;
   }
   
   .signup-left {
     flex: 1;
-    min-height: 300px;
+    min-height: 250px;
     padding: 40px 20px;
   }
   
@@ -331,22 +372,27 @@
   .signup-right {
     flex: 1;
     padding: 40px 20px;
+    overflow-y: visible;
   }
   
   .signup-logo-container {
     top: 20px;
     right: 20px;
+    left: auto;
   }
   
   .signup-form-container {
     max-width: 100%;
   }
+  
+  .signup-form-title {
+    margin-top: 60px;
+  }
 }
 
 @media (max-width: 480px) {
   .signup-left {
-    flex: 1;
-    min-height: 250px;
+    min-height: 200px;
     padding: 30px 20px;
   }
   
@@ -369,40 +415,36 @@
   
   .signup-logo,
   .signup-logo-placeholder {
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     font-size: 1.1rem;
   }
   
   .signup-form-title {
-    font-size: 1.6rem;
-    margin-top: 60px;
+    font-size: 1.5rem;
+    margin-top: 45px;
   }
   
   .signup-form-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
   }
   
   .signup-input {
-    padding: 12px 14px;
-    font-size: 0.95rem;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .password-input-wrapper .signup-input {
+    padding-right: 40px;
   }
   
   .signup-submit-button {
-    padding: 14px;
+    padding: 12px;
     font-size: 1rem;
   }
   
-  .show-password-label {
-    font-size: 0.9rem;
+  .signup-form-group {
+    margin-bottom: 12px;
   }
-}
-
-/* Utility Classes */
-.text-center {
-  text-align: center;
-}
-
-.w-100 {
-  width: 100%;
 }

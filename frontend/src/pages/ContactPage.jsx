@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
+import ScrollToTop from '../components/ScrollToTop';
 import './ContactPage.css';
 
 export default function ContactPage() {
@@ -36,7 +38,7 @@ export default function ContactPage() {
     e.preventDefault();
     
     // For now, just show success message (backend will be added later)
-    alert('Message sent successfully!');
+    toast.success('Message sent successfully!');
     
     // Reset form
     setFormData({
@@ -229,6 +231,25 @@ export default function ContactPage() {
               </form>
             </div>
           </div>
+
+          {/* Map Section */}
+          <section className="map-section">
+            <div className="map-container">
+              <h2 className="map-title">Find Us Here</h2>
+              <div className="map-wrapper">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0827470514346!2d85.31115931506237!3d27.715245982790566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18fdefffffff%3A0xf5f6f0b0b0b0b0b0!2sThamel%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1234567890123!5m2!1sen!2snp"
+                  width="100%"
+                  height="450"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Hamro Ghum Gham Location"
+                ></iframe>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
     </div>
