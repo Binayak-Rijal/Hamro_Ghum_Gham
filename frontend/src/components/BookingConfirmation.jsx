@@ -1,14 +1,3 @@
-// BookingConfirmation component - Success modal displayed after booking confirmation
-/**
- * This component displays a success confirmation after a booking is completed
- * Features include:
- * - Animated success checkmark for visual feedback
- * - Comprehensive booking details display (destination, date, guests, etc.)
- * - Auto-generated unique booking reference number
- * - Contact information display for customer communication
- * - Modal overlay with click-outside-to-close functionality
- * - Responsive design for all screen sizes
- */
 
 import React, { useState, useEffect } from 'react';
 // Import icons for visual elements (check, close, calendar, etc.)

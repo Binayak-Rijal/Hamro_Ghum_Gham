@@ -16,7 +16,7 @@ export default function ViewBooking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all'); // all, upcoming, completed, cancelled
+  const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,7 +142,6 @@ export default function ViewBooking() {
           </p>
         </div>
 
-        {/* Filter Tabs */}
         <div className="bookings-filters">
           <button
             className={`bookings-filter-btn ${filter === 'all' ? 'active' : ''}`}
@@ -171,7 +170,6 @@ export default function ViewBooking() {
         </div>
       </div>
 
-      {/* Bookings List */}
       <div className="bookings-content">
         {filteredBookings.length === 0 ? (
           <div className="bookings-empty">
@@ -194,7 +192,6 @@ export default function ViewBooking() {
           <div className="bookings-grid">
             {filteredBookings.map((booking) => (
               <div key={booking._id} className="booking-card">
-                {/* Booking Image */}
                 <div className="booking-card-image">
                   <img
                     src={booking.package?.images?.[0] || '/images/placeholder.jpg'}
@@ -206,7 +203,6 @@ export default function ViewBooking() {
                   </div>
                 </div>
 
-                {/* Booking Details */}
                 <div className="booking-card-content">
                   <h3 className="booking-card-title">
                     {booking.package?.name || 'Tour Package'}

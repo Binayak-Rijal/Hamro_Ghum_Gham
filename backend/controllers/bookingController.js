@@ -18,7 +18,6 @@ export const createBooking = async (req, res) => {
       totalPrice
     } = req.body;
 
-    // Validation
     if (!packageId || !packageName || !fullName ||  !phone || !travelDate || !numberOfPeople) {
       return res.status(400).json({
         success: false,

@@ -38,7 +38,7 @@ export default function EditProfile() {
 
     if (res.success) {
       toast.success('Profile updated');
-      navigate('/profile'); // stay on profile page or navigate to another as desired
+      navigate('/profile'); 
     } else {
       toast.error(res.message || 'Failed to update profile');
     }

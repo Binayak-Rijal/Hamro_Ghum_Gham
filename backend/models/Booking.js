@@ -103,8 +103,6 @@ const bookingSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Database Indexes
-// Index for faster queries by user and status
 bookingSchema.index({ user: 1, status: 1 });
 // Index for sorting by creation date (newest first)
 bookingSchema.index({ createdAt: -1 });
