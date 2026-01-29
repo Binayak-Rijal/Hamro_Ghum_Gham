@@ -1,3 +1,10 @@
+/**
+ * HomePage Component
+ * Landing page of the travel booking application
+ * Displays hero section, popular packages, and featured destinations
+ * Features search functionality and call-to-action buttons
+ */
+
 // frontend/src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,23 +14,35 @@ import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 
+/**
+ * HomePage Component
+ * Renders the main landing page with:
+ * - Hero banner with tagline
+ * - Popular packages carousel
+ * - Featured destinations section
+ * - Statistics section
+ */
 export default function HomePage() {
   const API_URL = 'http://localhost:3000/api';
 
-  // ✅ State for popular packages
+  // State for popular packages
   const [popularPackages, setPopularPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ State for featured destinations
+  // State for featured destinations
   const [featuredDestinations, setFeaturedDestinations] = useState([]);
   const [destinationsLoading, setDestinationsLoading] = useState(true);
 
-  // Fetch popular packages
+  // Fetch popular packages on component mount
   useEffect(() => {
     fetchPopularPackages();
   }, []);
 
+  /**
+   * Fetch popular packages from API
+   * Calls /api/packages/popular endpoint
+   */
   const fetchPopularPackages = async () => {
     try {
       setLoading(true);
@@ -39,11 +58,15 @@ export default function HomePage() {
     }
   };
 
-  // Fetch featured destinations
+  // Fetch featured destinations on component mount
   useEffect(() => {
     fetchFeaturedDestinations();
   }, []);
 
+  /**
+   * Fetch featured destinations from API
+   * Calls /api/destinations/featured endpoint
+   */
   const fetchFeaturedDestinations = async () => {
     try {
       setDestinationsLoading(true);
