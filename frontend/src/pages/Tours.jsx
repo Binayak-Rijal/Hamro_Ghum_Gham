@@ -1,5 +1,4 @@
 
-// frontend/src/pages/Tours.jsx (or HomePage.jsx)
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Star, Filter, Search } from 'lucide-react';
