@@ -4,9 +4,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Star, Bookmark, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios'; 
-import { toast } from 'react-toastify';
-
-
 import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import './DestinationDetail.css';

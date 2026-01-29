@@ -134,7 +134,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Compare provided password with hashed password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({

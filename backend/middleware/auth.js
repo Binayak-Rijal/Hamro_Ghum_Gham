@@ -83,19 +83,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-// Admin-only middleware (use after auth middleware)
-export const adminOnly = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
-    console.log('Admin access granted for:', req.user.email);
-    next();
-  } else {
-    console.log('Admin access denied for:', req.user?.email);
-    res.status(403).json({ 
-      success: false, 
-      message: 'Access denied. Admin privileges required.' 
-    });
-  }
-};
-
-// Export auth as default
 export default auth;

@@ -27,11 +27,7 @@ export default function PackageDetail() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth(); 
   
-  // ✅ State for package data from database
-  const [packageInfo, setPackageInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
+  // UPDATED: Save state
   const [isSaved, setIsSaved] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -48,7 +44,9 @@ export default function PackageDetail() {
   });
   const [errors, setErrors] = useState({});
 
-  // ✅ Fetch package data from database
+  const packageInfo = packagesData[packageId];
+
+  // UPDATED: Check if saved on mount
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchPackageData();
@@ -61,38 +59,7 @@ export default function PackageDetail() {
     }
   }, [packageId]);
 
-  const fetchPackageData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/packages/${packageId}`);
-      
-      if (response.data.success) {
-        setPackageInfo(response.data.package);
-      }
-    } catch (error) {
-      console.error('Error fetching package:', error);
-      setError('Package not found');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ NEW: Fetch user's rating for this package
-  const fetchUserRating = async () => {
-    try {
-      const response = await axios.get(
-        `${API_URL}/ratings/package/${packageId}/user`,
-        { headers: getAuthHeader() }
-      );
-      
-      if (response.data.success && response.data.rating) {
-        setUserRating(response.data.rating);
-      }
-    } catch (error) {
-      console.error('Error fetching user rating:', error);
-    }
-  };
-
+  //  NEW: Check saved status from database
   const checkIfSavedInDB = async () => {
     try {
       setIsCheckingStatus(true);
@@ -309,24 +276,42 @@ export default function PackageDetail() {
     }
 
     try {
-      // Store booking data in localStorage
-      const bookingInfo = {
-        packageId: packageInfo._id,
-        packageName: packageInfo.title,
-        fullName: bookingData.fullName,
-        phone: bookingData.phone.replace(/\D/g, ''),
-        travelDate: bookingData.date,
-        numberOfPeople: bookingData.guests,
-        subtotal,
-        serviceCharge,
-        totalPrice: total
-      };
-      
-      console.log('Booking data to save:', bookingInfo);
-      localStorage.setItem('pendingBooking', JSON.stringify(bookingInfo));
-      
-      // Navigate to complete booking page
-      navigate('/complete-booking');
+      const response = await axios.post(
+        'http://localhost:5000/api/bookings',
+        {
+          packageId: packageInfo.id,
+          packageName: packageInfo.name,
+          fullName: bookingData.fullName,
+          phone: bookingData.phone.replace(/\D/g, ''), // Clean phone number
+          travelDate: bookingData.date, // Changed from 'date' to 'travelDate'
+          numberOfPeople: bookingData.guests, // Changed from 'guests' to 'numberOfPeople'
+          subtotal,
+          serviceCharge,
+          totalPrice: total
+        },
+        { headers: getAuthHeader() }
+      );
+
+      if (response.data.success) {
+        //  Show popup instead of toast
+        setConfirmedBooking({
+          packageName: packageInfo.name,
+          date: bookingData.date,
+          guests: bookingData.guests,
+          duration: packageInfo.duration,
+          phone: bookingData.phone,
+          total: total
+        });
+        setShowConfirmation(true);
+        
+        // Reset form
+        setBookingData({
+          fullName: '',
+          phone: '',
+          date: '',
+          guests: 1
+        });
+      }
     } catch (error) {
       console.error('Error preparing booking:', error);
       toast.error('Failed to prepare booking. Please try again.');
@@ -556,32 +541,6 @@ export default function PackageDetail() {
           </div>
         </div>
       </main>
-
-      {/* Video Modal */}
-      {showVideoModal && (
-        <div className="video-modal-overlay" onClick={() => setShowVideoModal(false)}>
-          <div className="video-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="video-modal-close"
-              onClick={() => setShowVideoModal(false)}
-              title="Close video"
-            >
-              <X size={24} />
-            </button>
-            <div className="video-container">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`${packageInfo.videoUrl}?autoplay=1`}
-                title={packageInfo.name}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Booking Confirmation Popup */}
       {showConfirmation && confirmedBooking && (
