@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import './WelcomePage.css';
 
 function WelcomePage() {
+  const navigate = useNavigate();
+
   const handleExplore = () => {
-    alert('Welcome Adventurer! Your journey begins now.');
+    navigate('/faq');
   };
 
   return (
