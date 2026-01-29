@@ -135,36 +135,110 @@ desktop.ini
 # TypeScript
 *.tsbuildinfo
 
-<<<<<<< HEAD
-# Keep lockfiles under version control (do not ignore package-lock.json or pnpm-lock.yaml)
-=======
 # Keep lockfiles under version control
 # (do not ignore package-lock.json, yarn.lock, pnpm-lock.yaml)
 =======
-# Logs
-logs
+# --- Node / Package artifacts ---
+# Ignore all node_modules in any workspace package
+node_modules/
+**/node_modules/
+
+# pnpm and Yarn PnP
+.pnpm-store/
+.pnp/
+
+# Build and output folders
+dist/
+build/
+out/
+.next/
+.vite/
+.vite-temp/
+.cache/
+public/build/
+**/dist/
+**/build/
+
+# Frontend / Backend specific
+/frontend/node_modules/
+/frontend/dist/
+/backend/node_modules/
+/backend/uploads/
+/uploads/
+
+# --- Environment and secrets ---
+# Local environment files (don't commit secrets)
+.env
+.env.*.local
+.env.test
+.env.production
+
+# --- Logs ---
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# --- Dependency manager logs ---
+.pnpm-debug.log
+yarn-error.log
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# --- Coverage / reports ---
+coverage/
+coverage/**
+
+# --- OS generated files ---
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editor / IDE ---
+.vscode/
+!.vscode/extensions.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
->>>>>>> eb548c25de57fffdcd6ac2bdce7decdd349326e4
->>>>>>> be5101cc92504a968f0fca43fdf02b0f72dad7a2
->>>>>>> 0f4b536e0f80802d5681f5f895a0e68ec2ad84ab
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- Misc ---
+*.tgz
+*.zip
+*.tar.gz
+*.seed
+*.pid
+
+# --- Keep lockfiles under version control ---
+# (do not ignore these)
+!package-lock.json
+!yarn.lock
+!pnpm-lock.yaml
+
+# Ignore bundled vendor packages in frontend while keeping project files
+# - ignore everything in `frontend/` then re-include project folders/files
+/frontend/*
+!/frontend/src/
+!/frontend/public/
+!/frontend/package.json
+!/frontend/package-lock.json
+!/frontend/index.html
+!/frontend/vite.config.js
+!/frontend/README.md
+!/frontend/eslint.config.js
+!/frontend/.gitignore
+
+# Also ignore common nested vendor dirs under frontend
+frontend/**/node_modules/
+frontend/**/.vite/
+frontend/**/.vite-temp/
+frontend/**/dist/
+frontend/**/build/
+
+# End of file
+
