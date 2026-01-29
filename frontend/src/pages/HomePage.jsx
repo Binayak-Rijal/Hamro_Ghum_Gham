@@ -84,6 +84,10 @@ export default function HomePage() {
   return (
     <div className="homepage">
       <Navbar />
+      <ScrollToTop />
+
+      <main className="main-content">
+        {/* Hero Section */}
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-badge">
