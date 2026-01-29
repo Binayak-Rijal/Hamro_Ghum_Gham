@@ -1,366 +1,53 @@
-/* WelcomePage.css */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* App.css - You can keep this minimal or remove it entirely */
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
 
 #root {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 24px;
-  color: #fff;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.container {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-}
-
-.left-panel {
-  flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 40px 60px;
-  position: relative;
-  clip-path: ellipse(80% 100% at 0% 50%);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: white;
-  position: relative;
-}
-
-.logo-circle::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 12px;
-  height: 12px;
-  background: #667eea;
-  border-radius: 50%;
-}
-
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  max-width: 500px;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  font-size: 48px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 20px;
-  letter-spacing: 2px;
-}
-
-.description {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 30px;
-  line-height: 1.6;
-}
-
-.explore-btn {
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 15px 40px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  align-self: flex-start;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.explore-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.navigation {
-  display: flex;
-  gap: 10px;
-}
-
-.nav-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.nav-dot.active {
-  background: white;
-  width: 30px;
-  border-radius: 5px;
-}
-
-.right-panel {
-  flex: 1;
-  background: linear-gradient(to bottom, #1a1438 0%, #2d1b4e 50%, #4a2b6f 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.welcome-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.scene {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.stars {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  top: 0;
-}
-
-.star {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: white;
-  border-radius: 50%;
-  animation: twinkle 2s infinite;
-}
-
-.star-1 { top: 15%; left: 20%; animation-delay: 0s; }
-.star-2 { top: 25%; left: 45%; animation-delay: 0.5s; }
-.star-3 { top: 10%; left: 70%; animation-delay: 1s; }
-.star-4 { top: 30%; left: 85%; animation-delay: 1.5s; }
-.star-5 { top: 20%; left: 60%; animation-delay: 0.8s; }
-
-@keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.mountains {
-  position: absolute;
-  bottom: 30%;
-  width: 100%;
-  height: 40%;
-}
-
-.mountain {
-  position: absolute;
-  bottom: 0;
-}
-
-.mountain-1 {
-  left: 10%;
-  width: 0;
-  height: 0;
-  border-left: 150px solid transparent;
-  border-right: 150px solid transparent;
-  border-bottom: 250px solid #2a1a4a;
-}
-
-.mountain-2 {
-  left: 35%;
-  width: 0;
-  height: 0;
-  border-left: 120px solid transparent;
-  border-right: 120px solid transparent;
-  border-bottom: 200px solid #3d2560;
-}
-
-.mountain-3 {
-  right: 15%;
-  width: 0;
-  height: 0;
-  border-left: 100px solid transparent;
-  border-right: 100px solid transparent;
-  border-bottom: 180px solid #2a1a4a;
-}
-
-.tent {
-  position: absolute;
-  bottom: 35%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.tent-left {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 40px solid transparent;
-  border-right: 0px solid transparent;
-  border-bottom: 60px solid #f4a261;
-}
-
-.tent-right {
-  position: absolute;
-  left: 40px;
-  width: 0;
-  height: 0;
-  border-left: 0px solid transparent;
-  border-right: 40px solid transparent;
-  border-bottom: 60px solid #e76f51;
-}
-
-.tent-pole {
-  position: absolute;
-  left: 38px;
-  top: 0;
-  width: 4px;
-  height: 70px;
-  background: #8b4513;
-}
-
-.campfire {
-  position: absolute;
-  bottom: 30%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.fire {
-  position: absolute;
-  width: 20px;
-  height: 30px;
-  background: linear-gradient(to top, #ff6b35 0%, #f7931e 50%, #ffd700 100%);
-  border-radius: 50% 50% 0 0;
-  animation: flicker 1s infinite;
-}
-
-@keyframes flicker {
-  0%, 100% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.1) translateY(-5px); }
-}
-
-.logs {
-  position: absolute;
-  top: 25px;
-  left: -5px;
-  width: 30px;
-  height: 8px;
-  background: #4a2511;
-  border-radius: 2px;
-}
-
-.logs::after {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: 5px;
-  width: 20px;
-  height: 8px;
-  background: #5d3319;
-  border-radius: 2px;
-}
-
-.trees {
-  position: absolute;
-  bottom: 20%;
-  width: 100%;
-}
-
-.tree {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 60px solid #1a4d2e;
-}
-
-.tree::after {
-  content: '';
-  position: absolute;
-  bottom: -70px;
-  left: -5px;
-  width: 10px;
-  height: 15px;
-  background: #4a2511;
-}
-
-.tree-1 {
-  left: 15%;
-  bottom: 10%;
-}
-
-.tree-2 {
-  left: 75%;
-  bottom: 5%;
-  transform: scale(0.8);
-}
-
-.tree-3 {
-  right: 10%;
-  bottom: 15%;
-  transform: scale(1.2);
-}
-
-@media (max-width: 968px) {
-  .container {
-    flex-direction: column;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  
-  .left-panel {
-    clip-path: none;
-    padding: 30px;
-  }
-  
-  .subtitle {
-    font-size: 36px;
+  to {
+    transform: rotate(360deg);
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+*/
+
+/* Or keep only what you need */
+#root {
+  width: 100%;
+}
+
+/* Add any custom styles that Tailwind doesn't cover */

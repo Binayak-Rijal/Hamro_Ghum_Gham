@@ -1,18 +1,170 @@
+# Node
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.vite/
+.cache/
+public/build/
+
+# Frontend / Backend specific
+/frontend/node_modules/
+/frontend/dist/
+/backend/node_modules/
+/backend/uploads/
+/uploads/
+
+# Environment / secret files
+.env
+.env.local
+.env.*.local
+.env.test
+.env.production
+
+# Coverage and reports
+coverage/
+coverage/**
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE/editor folders
+.vscode/
+.idea/
+# *.suo
+# *.ntvs*
+# *.njsproj
+# *.sln
+# *.sw?
+
+# # Package manager
+# .pnpm-debug.log
+
+# # Misc
+# *.tgz
+# *.zip
+# *.tar.gz
+# *.seed
+# *.pid
+
+# # TypeScript
+# *.tsbuildinfo
+
+# # Keep lockfiles under version control (do not ignore package-lock.json or pnpm-lock.yaml)
+
+
 # Node dependencies
 node_modules/
 
 # Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.vite/
+.cache/
+public/build/
+
+# Frontend / Backend specific
+/frontend/node_modules/
+/frontend/dist/
+/backend/node_modules/
+/backend/uploads/
+/uploads/
+
+# Environment / secret files
+.env
+.env.local
+.env.*.local
+.env.test
+.env.production
+
+# Coverage and reports
+coverage/
+coverage/**
+
+# Jest configuration
+jest.config.js
+jest.config.cjs
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE/editor folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Package manager
+.pnpm-debug.log
+
+# Misc
+*.tgz
+*.zip
+*.tar.gz
+*.seed
+*.pid
+
+# TypeScript
+*.tsbuildinfo
+
+<<<<<<< HEAD
+# Keep lockfiles under version control (do not ignore package-lock.json or pnpm-lock.yaml)
+=======
+# Keep lockfiles under version control
+# (do not ignore package-lock.json, yarn.lock, pnpm-lock.yaml)
+=======
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Build files
-dist/
-build/
+node_modules
+dist
+dist-ssr
+*.local
 
-# Environment variables
-.env
-
-# OS files
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+>>>>>>> eb548c25de57fffdcd6ac2bdce7decdd349326e4
+>>>>>>> be5101cc92504a968f0fca43fdf02b0f72dad7a2
+>>>>>>> 0f4b536e0f80802d5681f5f895a0e68ec2ad84ab
