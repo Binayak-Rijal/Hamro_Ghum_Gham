@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar';
+import ScrollToTop from './ScrollToTop';
 import './SavedPackages.css';
 
 // Helper function for auth
@@ -39,7 +40,7 @@ export default function SavedPackages() {
       
       // Fetch all saved items
       const response = await axios.get(
-        'http://localhost:5000/api/saved',
+        'http://localhost:3000/api/saved',
         { headers: getAuthHeader() }
       );
 
@@ -72,7 +73,7 @@ export default function SavedPackages() {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/saved/${itemId}/${itemType}`,
+        `http://localhost:3000/api/saved/${itemId}/${itemType}`,
         { headers: getAuthHeader() }
       );
 
@@ -104,7 +105,7 @@ export default function SavedPackages() {
       // Delete all items one by one
       for (const item of allItems) {
         await axios.delete(
-          `http://localhost:5000/api/saved/${item.itemId}/${item.itemType}`,
+          `http://localhost:3000/api/saved/${item.itemId}/${item.itemType}`,
           { headers: getAuthHeader() }
         );
       }
@@ -145,6 +146,8 @@ export default function SavedPackages() {
 
   return (
     <div className="saved-packages-page">
+      <ScrollToTop />
+      {/* Shared Navigation */}
       <Navbar />
 
       {/* Main Content */}

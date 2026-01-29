@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, Mail, Phone, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
 import axios from 'axios';
+import ScrollToTop from './ScrollToTop';
 import './ViewBooking.css';
 
 // Helper function for auth headers
@@ -25,7 +27,7 @@ export default function ViewBooking() {
     try {
       setLoading(true);
       const response = await axios.get(
-        'http://localhost:5000/api/bookings',
+        'http://localhost:3000/api/bookings',
         { headers: getAuthHeader() }
       );
 
@@ -47,7 +49,7 @@ export default function ViewBooking() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/bookings/${bookingId}/cancel`,
+        `http://localhost:3000/api/bookings/${bookingId}/cancel`,
         {},
         { headers: getAuthHeader() }
       );
@@ -63,11 +65,11 @@ export default function ViewBooking() {
         // Dispatch event to update navbar count
         window.dispatchEvent(new Event('bookingsChanged'));
         
-        alert('Booking cancelled successfully');
+        toast.success('Booking cancelled successfully');
       }
     } catch (err) {
       console.error('Error cancelling booking:', err);
-      alert('Failed to cancel booking. Please try again.');
+      toast.error('Failed to cancel booking. Please try again.');
     }
   };
 
@@ -131,6 +133,7 @@ export default function ViewBooking() {
 
   return (
     <div className="bookings-container">
+      <ScrollToTop />
       <div className="bookings-header">
         <div className="bookings-header-content">
           <h1 className="bookings-title">My Bookings</h1>
