@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import './DestinationDetail.css';
 import BookingConfirmation from '../components/BookingConfirmation';
+import { assetUrl } from '../utils/assetUrl';
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -254,7 +255,7 @@ export default function DestinationDetail() {
             <div className="destination-info">
               {/* Hero Image */}
               <div className="destination-hero-image">
-                <img src={destinationInfo.image || '/images/default.jpg'} alt={destinationInfo.name} />
+                <img src={assetUrl(destinationInfo.image || '/images/default.jpg')} alt={destinationInfo.name} />
                 <button 
                   className={`save-button ${isSaved ? 'saved' : ''}`}
                   onClick={handleSaveToggle}

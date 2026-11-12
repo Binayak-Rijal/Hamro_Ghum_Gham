@@ -13,6 +13,7 @@ import './HomePage.css';
 import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
+import { assetUrl } from '../utils/assetUrl';
 
 /**
  * HomePage Component
@@ -186,10 +187,10 @@ export default function HomePage() {
                     <div className="package-card">
                       <div className="package-image-container">
                         <img
-                          src={pkg.image || '/images/default.jpg'}
+                          src={assetUrl(pkg.image || '/images/default.jpg')}
                           alt={pkg.title}
                           className="package-image"
-                          onError={(e) => { e.target.src = '/images/default.jpg'; }}
+                          onError={(e) => { e.target.onerror = null; e.target.src = assetUrl('/images/default.jpg'); }}
                         />
                         <div className="package-badge">
                           {pkg.category ? pkg.category.charAt(0).toUpperCase() + pkg.category.slice(1) : 'Featured'}
@@ -275,10 +276,10 @@ export default function HomePage() {
                     <div className="package-card">
                       <div className="package-image-container">
                         <img
-                          src={dest.image || '/images/default.jpg'}
+                          src={assetUrl(dest.image || '/images/default.jpg')}
                           alt={dest.name}
                           className="package-image"
-                          onError={(e) => { e.target.src = '/images/default.jpg'; }}
+                          onError={(e) => { e.target.onerror = null; e.target.src = assetUrl('/images/default.jpg'); }}
                         />
                         <div className="package-badge">{dest.badge || 'Featured'}</div>
                       </div>

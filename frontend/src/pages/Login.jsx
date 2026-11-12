@@ -148,7 +148,7 @@ const Login = () => {
         <div className="login-form-container">
           <div className="login-logo-container">
             <img
-              src="/images/logo.png"
+              src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="Hamro Ghum Gham Logo"
               className="login-logo"
               onError={(e) => {

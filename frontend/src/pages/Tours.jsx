@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './Tours.css';
+import { assetUrl } from '../utils/assetUrl';
 
 export default function Tours() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -240,7 +241,7 @@ export default function Tours() {
                     <div className="tour-card">
                       <div className="tour-image-container">
                         <img 
-                          src={pkg.image || '/images/default.jpg'} 
+                          src={assetUrl(pkg.image || '/images/default.jpg')}
                           alt={pkg.title} 
                           className="tour-image" 
                         />

@@ -160,7 +160,7 @@ export default function Navbar() {
           {/* Logo */}
           <div className="site-logo" onClick={() => navigate('/home')}>
             <img 
-              src="/images/logo.png" 
+              src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="HamroGhum Logo" 
               className="site-logo__image"
             />

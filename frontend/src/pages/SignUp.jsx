@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import ScrollToTop from "../components/ScrollToTop";
 import "./SignUp.css";
 
-const backgroundUrl = `/images/background.jpg`;
-const logoUrl = `/images/logo.png`;
+const backgroundUrl = `${import.meta.env.BASE_URL}images/background.jpg`;
+const logoUrl = `${import.meta.env.BASE_URL}images/logo.png`;
 
 const SignUp = () => {
   const navigate = useNavigate();

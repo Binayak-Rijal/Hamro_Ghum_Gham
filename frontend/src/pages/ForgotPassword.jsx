@@ -115,7 +115,7 @@ const ForgotPassword = () => {
           {/* Logo with fallback to placeholder */}
           <div className="forgot-password-logo-container">
             <img
-              src="/images/logo.png"
+              src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="Hamro Ghum Gham Logo"
               className="forgot-password-logo"
               // onError triggers if image fails to load

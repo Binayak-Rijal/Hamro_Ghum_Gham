@@ -16,7 +16,7 @@ function WelcomePage() {
         <div className="logo">
           <div className="logo-circle">
             <img 
-              src="/images/logo.png" 
+              src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="Hamro Ghum Gham Logo" 
               className="logo-image"
               onError={(e) => {
@@ -48,7 +48,7 @@ function WelcomePage() {
 
       <div className="right-panel">
         <img 
-          src="/images/Welcome2.jpg" 
+          src={`${import.meta.env.BASE_URL}images/Welcome2.jpg`}
           alt="Beautiful Nepal Landscape" 
           className="welcome-image" 
         />

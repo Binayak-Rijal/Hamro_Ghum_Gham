@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import ScrollToTop from './ScrollToTop';
 import './ViewBooking.css';
+import { assetUrl } from '../utils/assetUrl';
 
 // Helper function for auth headers
 const getAuthHeader = () => {
@@ -194,7 +195,7 @@ export default function ViewBooking() {
               <div key={booking._id} className="booking-card">
                 <div className="booking-card-image">
                   <img
-                    src={booking.package?.images?.[0] || '/images/placeholder.jpg'}
+                    src={assetUrl(booking.package?.images?.[0] || '/images/placeholder.jpg')}
                     alt={booking.package?.name || 'Tour'}
                   />
                   <div className={getStatusClass(booking.status)}>

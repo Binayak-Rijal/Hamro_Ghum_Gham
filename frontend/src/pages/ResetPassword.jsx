@@ -108,7 +108,7 @@ const ResetPassword = () => {
         <div className="reset-password-form-container">
           <div className="reset-password-logo-container">
             <img
-              src="/images/logo.png"
+              src={`${import.meta.env.BASE_URL}images/logo.png`}
               alt="Hamro Ghum Gham Logo"
               className="reset-password-logo"
               onError={(e) => {

@@ -24,6 +24,7 @@ import Navbar from '../components/Navbar';
 import ScrollToTop from '../components/ScrollToTop';
 import axios from 'axios';
 import './Destinations.css';
+import { assetUrl } from '../utils/assetUrl';
 
 export default function Destinations() {
   // State for storing destination data from database
@@ -198,13 +199,11 @@ export default function Destinations() {
                     <div className="destination-image-container">
                       <img 
                         // Use destination image or fallback to default
-                        src={destination.image || '/images/default.jpg'} 
+                        src={assetUrl(destination.image || '/images/default.jpg')}
                         alt={destination.name} 
                         className="destination-image"
                         // onError handles broken image links
-                        onError={(e) => {
-                          e.target.src = '/images/default.jpg';
-                        }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = assetUrl('/images/default.jpg'); }}
                       />
                       {/* Badge overlay (e.g., "Featured", "Popular") */}
                       <div className="destination-badge">{destination.badge || 'Featured'}</div>
